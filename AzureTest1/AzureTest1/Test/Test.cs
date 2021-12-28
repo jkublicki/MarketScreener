@@ -14,6 +14,7 @@ namespace MarketScreener.Test
 
             QueryDatabase.Test();
             Console.ReadLine();
+            //...
         }
     }
 }
