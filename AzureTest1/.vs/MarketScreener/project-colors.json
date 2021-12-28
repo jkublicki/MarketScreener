@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "c59bbd31-fdac-4124-bf3f-675c7d04a02a": {
+      "ProjectGuid": "c59bbd31-fdac-4124-bf3f-675c7d04a02a",
+      "DisplayName": "MarketScreener",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj": {}
+    "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj": {
+    "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
+        "projectUniqueName": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
         "projectName": "MarketScreener",
-        "projectPath": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
+        "projectPath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
         "packagesPath": "C:\\Users\\jkubl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\obj\\",
+        "outputPath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -47,6 +47,10 @@
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[4.0.0, )"
+            },
+            "YahooFinanceClient": {
+              "target": "Package",
+              "version": "[1.4.0, )"
             }
           },
           "imports": [

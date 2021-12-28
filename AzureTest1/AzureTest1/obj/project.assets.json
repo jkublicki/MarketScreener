@@ -602,6 +602,15 @@
             "rid": "win"
           }
         }
+      },
+      "YahooFinanceClient/1.4.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/YahooFinanceClient.dll": {}
+        },
+        "runtime": {
+          "lib/net40/YahooFinanceClient.dll": {}
+        }
       }
     }
   },
@@ -2306,11 +2315,24 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "YahooFinanceClient/1.4.0": {
+      "sha512": "5KTu+/YBvVtVLL3i/6avgGZobf437qLCxYyL5OV+5O4F1hP1G8Izr+hK9dKlydpMNAWmz3cCZ1kyKcVwU5X2hA==",
+      "type": "package",
+      "path": "yahoofinanceclient/1.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/YahooFinanceClient.dll",
+        "yahoofinanceclient.1.4.0.nupkg.sha512",
+        "yahoofinanceclient.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "Microsoft.Data.SqlClient >= 4.0.0"
+      "Microsoft.Data.SqlClient >= 4.0.0",
+      "YahooFinanceClient >= 1.4.0"
     ]
   },
   "packageFolders": {
@@ -2320,11 +2342,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
+      "projectUniqueName": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
       "projectName": "MarketScreener",
-      "projectPath": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
+      "projectPath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
       "packagesPath": "C:\\Users\\jkubl\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jkubl\\source\\repos\\AzureTest1\\AzureTest1\\obj\\",
+      "outputPath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2360,6 +2382,10 @@
           "Microsoft.Data.SqlClient": {
             "target": "Package",
             "version": "[4.0.0, )"
+          },
+          "YahooFinanceClient": {
+            "target": "Package",
+            "version": "[1.4.0, )"
           }
         },
         "imports": [
@@ -2380,5 +2406,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Pakiet „YahooFinanceClient 1.4.0” został przywrócony przy użyciu elementu „.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8” zamiast platformy docelowej projektu „net6.0”. Ten pakiet może nie być w pełni kompatybilny z Twoim projektem.",
+      "libraryId": "YahooFinanceClient",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }
