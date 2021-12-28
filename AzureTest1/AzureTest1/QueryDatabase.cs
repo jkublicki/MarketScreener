@@ -92,6 +92,7 @@ namespace MarketScreener
                     throw e;
                 }
                 return -1;
+
             }
         }
 
