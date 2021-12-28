@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "P6RwbqJ/4o5krbw+tLgBZYVkAv5jRVDrjYZPa5XfvS5t93XC8IX5ws3FSTdmAAmibnKnjZEJ5O6O91elaVt6wA==",
+  "dgSpecHash": "PCl/yrXec4Krlgh6wctY+5mllbndZT3sSpvznQ+GGGlukB6R0yAJZz63ABhGK83/F/JwXY/DH5rI9Lf5ju1Dsw==",
   "success": true,
   "projectFilePath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
   "expectedPackageFiles": [
@@ -47,19 +47,7 @@
     "C:\\Users\\jkubl\\.nuget\\packages\\system.text.json\\4.6.0\\system.text.json.4.6.0.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.2\\system.threading.tasks.extensions.4.5.2.nupkg.sha512",
-    "C:\\Users\\jkubl\\.nuget\\packages\\system.windows.extensions\\5.0.0\\system.windows.extensions.5.0.0.nupkg.sha512",
-    "C:\\Users\\jkubl\\.nuget\\packages\\yahoofinanceclient\\1.4.0\\yahoofinanceclient.1.4.0.nupkg.sha512"
+    "C:\\Users\\jkubl\\.nuget\\packages\\system.windows.extensions\\5.0.0\\system.windows.extensions.5.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Pakiet „YahooFinanceClient 1.4.0” został przywrócony przy użyciu elementu „.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8” zamiast platformy docelowej projektu „net6.0”. Ten pakiet może nie być w pełni kompatybilny z Twoim projektem.",
-      "libraryId": "YahooFinanceClient",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    }
-  ]
+  "logs": []
 }

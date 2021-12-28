@@ -47,10 +47,6 @@
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[4.0.0, )"
-            },
-            "YahooFinanceClient": {
-              "target": "Package",
-              "version": "[1.4.0, )"
             }
           },
           "imports": [

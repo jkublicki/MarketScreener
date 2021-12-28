@@ -97,7 +97,7 @@ namespace MarketScreener
 
         public static void Test()
         {
-            string cs = "Server = tcp:jkublickiserver1.database.windows.net,1433; Database=DB1; Initial Catalog = DB1; Persist Security Info = False; User ID = jkublickiadm; Password =Makaron1!#; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;";
+            string cs = Secrets.ConnectionString;
             string q = String.Concat("INSERT INTO ENU_TICKER (TickerGoogleFinance) VALUES ('test_", Guid.NewGuid().ToString().AsSpan(0, 7), "')");
             int rows = ExecuteSQLStatement(cs, q, true, out bool _);
 

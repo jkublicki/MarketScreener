@@ -10,6 +10,8 @@ namespace MarketScreener.Test
     {
         static void Main(string[] args)
         {
+            
+
             QueryDatabase.Test();
             Console.ReadLine();
         }
