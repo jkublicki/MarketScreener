@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MarketScreener.Test
 {
@@ -10,11 +11,21 @@ namespace MarketScreener.Test
     {
         static void Main(string[] args)
         {
-            
 
-            QueryDatabase.Test();
+            //test 
+            //QueryDatabase.Test();
+
+            Debug.WriteLine("wtf");
+
+            //test HAPxYahooFinance
+            List<string> r = DataHunters.HAPxYahooFinance.Test();
+            foreach(string s in r)
+            {
+                Console.WriteLine(s);
+            }
             Console.ReadLine();
-            //...
+
+            DataHunters.HAPxYahooFinance.Service();
         }
     }
 }

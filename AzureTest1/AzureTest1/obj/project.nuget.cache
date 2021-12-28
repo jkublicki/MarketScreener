@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "PCl/yrXec4Krlgh6wctY+5mllbndZT3sSpvznQ+GGGlukB6R0yAJZz63ABhGK83/F/JwXY/DH5rI9Lf5ju1Dsw==",
+  "dgSpecHash": "B5PSg07meenKcSq1F0dSHk4w74GUYu2k27H89szWAGTG4e/wRkDattYpX9lLxIHPyyKl0IURiKe2rKHgYrYLBw==",
   "success": true,
   "projectFilePath": "C:\\Repos\\Projects\\MarketScreener\\AzureTest1\\AzureTest1\\MarketScreener.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jkubl\\.nuget\\packages\\azure.core\\1.6.0\\azure.core.1.6.0.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\azure.identity\\1.3.0\\azure.identity.1.3.0.nupkg.sha512",
+    "C:\\Users\\jkubl\\.nuget\\packages\\htmlagilitypack\\1.11.39\\htmlagilitypack.1.11.39.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.0.0\\microsoft.bcl.asyncinterfaces.1.0.0.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\jkubl\\.nuget\\packages\\microsoft.data.sqlclient\\4.0.0\\microsoft.data.sqlclient.4.0.0.nupkg.sha512",

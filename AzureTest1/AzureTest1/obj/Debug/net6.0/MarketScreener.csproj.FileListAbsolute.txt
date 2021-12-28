@@ -92,3 +92,4 @@ C:\Repos\Projects\MarketScreener\AzureTest1\AzureTest1\obj\Debug\net6.0\MarketSc
 C:\Repos\Projects\MarketScreener\AzureTest1\AzureTest1\obj\Debug\net6.0\ref\MarketScreener.dll
 C:\Repos\Projects\MarketScreener\AzureTest1\AzureTest1\obj\Debug\net6.0\MarketScreener.pdb
 C:\Repos\Projects\MarketScreener\AzureTest1\AzureTest1\obj\Debug\net6.0\MarketScreener.genruntimeconfig.cache
+C:\Repos\Projects\MarketScreener\AzureTest1\AzureTest1\bin\Debug\net6.0\HtmlAgilityPack.dll
