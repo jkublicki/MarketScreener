@@ -13,7 +13,10 @@ namespace MarketScreener.Test
         {
 
             //test 
-            //QueryDatabase.Test();
+
+            Console.WriteLine("Start");
+
+            QueryDatabase.Test();
 
             Debug.WriteLine("wtf");
 
@@ -26,7 +29,7 @@ namespace MarketScreener.Test
             //Console.ReadLine();
 
             Console.WriteLine("--- przed service");
-            Console.WriteLine(DataHunters.HAPxYahooFinance.Service1());
+            Console.WriteLine(DataHunters.HAPxYahooFinance.Service1a());
             Console.WriteLine("--- po service");
         }
     }
