@@ -21,7 +21,7 @@ namespace MarketScreener.Test
             Debug.WriteLine("wtf");
 
             //test HAPxYahooFinance
-            List<string> r = DataHunters.HAPxYahooFinance.Test();
+            List<string> r = DataHunters.HAPxYahooFinance.HAPxYahooFinance.Test();
             foreach(string s in r)
             {
                 Console.WriteLine(s);
@@ -29,7 +29,7 @@ namespace MarketScreener.Test
             //Console.ReadLine();
 
             Console.WriteLine("--- przed service");
-            Console.WriteLine(DataHunters.HAPxYahooFinance.Service1a());
+            Console.WriteLine(DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service1a());
             Console.WriteLine("--- po service");
         }
     }

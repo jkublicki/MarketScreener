@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 
 
+
 /*
  * todo:
  * 
@@ -43,7 +44,7 @@ using System.Diagnostics;
  * 
  */
 
-namespace MarketScreener.DataHunters
+namespace MarketScreener.DataHunters.HAPxYahooFinance
 {
     internal static class HAPxYahooFinance
     {
@@ -66,154 +67,22 @@ namespace MarketScreener.DataHunters
             return tickers;
         }
 
-        private class WebsiteNode
-        {
-            public string Website;
-            public string Ticker;
-            public string Name;
-            public string ServiceMode; //określa metodę szukania danych: XPATH, DOCTEXT
-            public string FullXPATH;
-            public string DataLocation; //określa położenie danych w node, tylko dla XPATH: AttributeValue, InnerText, InnerHtml            
-            public string SearchElementBeforeLeft; //jn. poprzedzający SearchElementLeft
-            public string SearchElementLeft; //charakterystyczny stały tekst poprzedzający dane, tylko dla DOCTEXT
-            public int LeftSEMaxDistance;
-            public string SearchElementRight; //jw. występujący po danych
-            public string Value;
-            public string ColumnName;
-            public List<string> Tables; //zakładając, że update wielu tabel, ale tabele mają tak samo nazwane kolumny odpowiadające temu punktowi danych
-            public string Type; //to jakiś bullshit, trzeba wymyślić jak określać konwersję
-            public DateTime UpdateDate;
-        }
+        
 
-        private class WebsiteNodeSet
-        {
-            public string Website;
-            public string WebsiteType;
-            public string Ticker;
-            public DateTime UpdateDate;
-            public List<WebsiteNode> Nodes;
-        }
+        private static WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = new WebsiteNodes.WebsiteNodeSet();
 
-        private static WebsiteNodeSet yahooEquityNodeSet = new WebsiteNodeSet();
-
-        private static void CreateNodeSets()
-        {
-            yahooEquityNodeSet = new()
-            {
-                Website = "finance.yahoo.com",
-                WebsiteType = "Equity",
-                UpdateDate = DateTime.Now,
-                Nodes = new List<WebsiteNode>()
-                {
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "Price",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]",
-                        DataLocation = "AttributeValue",
-                        ColumnName = "Price",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "PreviousClose",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]",
-                        DataLocation = "InnerText",
-                        ColumnName = "PreviousClose",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "1yTargetEst",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[8]/td[2]",
-                        DataLocation = "InnerText",
-                        ColumnName = "1TargetEst",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
-                    }                    ,
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "52WeekRange",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
-                        DataLocation = "InnerText",
-                        ColumnName = "52WeekRange",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "..."
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "Volume",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/fin-streamer",
-                        DataLocation = "InnerHtml",
-                        ColumnName = "Volume",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "..."
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "AvgVolume",
-                        ServiceMode = "XPATH",
-                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[8]/td[2]",
-                        DataLocation = "InnerText",
-                        ColumnName = "AvgVolume",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "Sector",
-                        ServiceMode = "DOCTEXT",
-                        SearchElementLeft = "sector\":\"",
-                        SearchElementBeforeLeft = "summaryProfile",
-                        LeftSEMaxDistance = 40,
-                        SearchElementRight = "\",\"",
-                        ColumnName = "Sector",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "string"
-                    },
-                    new WebsiteNode()
-                    {
-                        Website = "finance.yahoo.com",
-                        Name = "RecommendationRating",
-                        ServiceMode = "DOCTEXT",
-                        SearchElementLeft = "raw\":",
-                        SearchElementBeforeLeft = "recommendationMean",
-                        LeftSEMaxDistance = 10,
-                        SearchElementRight = ",\"",
-                        ColumnName = "Sector",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "string"
-                    }
-
-
-
-                }
-            };
-        }
+        
 
         public static string Service1a()
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
             List<string> tickers = GetYahooTickers();
-            CreateNodeSets();
+            yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
             
 
             var web = new HtmlAgilityPack.HtmlWeb();
 
-            string result = "HAPxYahooFinance.Service1() result:\n";
+            string result = "\nHAPxYahooFinance.Service1a() result:\n\n";
 
             if (tickers.Count > 0)
             {
@@ -231,11 +100,11 @@ namespace MarketScreener.DataHunters
                     
 
                     
-                    foreach (WebsiteNode n in yahooEquityNodeSet.Nodes)
+                    foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
                         Debug.WriteLine("debug: node = " + n.Name + "\n");
 
-                        if (n.ServiceMode == "XPATH")
+                        if (n.ServiceMode == WebsiteNodes.ServiceModes.XPATH)
                         {                            
                             try
                             {
@@ -245,7 +114,7 @@ namespace MarketScreener.DataHunters
 
                                 string dataPoint = "NULL";
 
-                                if (n.DataLocation == "AttributeValue")
+                                if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
                                 {
                                     try
                                     {
@@ -259,7 +128,7 @@ namespace MarketScreener.DataHunters
                                     }
 
                                 }
-                                else if (n.DataLocation == "InnerText")
+                                else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
                                 {
                                     try
                                     {
@@ -272,7 +141,7 @@ namespace MarketScreener.DataHunters
                                         Debug.WriteLine("Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n");
                                     }
                                 }
-                                else if (n.DataLocation == "InnerHtml")
+                                else if (n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
                                 {
                                     try
                                     {
@@ -296,7 +165,7 @@ namespace MarketScreener.DataHunters
                                 Debug.WriteLine("DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n");
                             }
                         }
-                        else if (n.ServiceMode == "DOCTEXT")
+                        else if (n.ServiceMode == WebsiteNodes.ServiceModes.DOCTEXT)
                         {
                             string docText = doc.Text;
 
