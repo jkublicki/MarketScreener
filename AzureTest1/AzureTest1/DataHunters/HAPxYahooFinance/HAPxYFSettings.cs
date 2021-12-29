@@ -26,7 +26,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.AttributeValue,
                         ColumnName = "Price",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Decimal
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -37,7 +37,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "PreviousClose",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Decimal
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -48,18 +48,29 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "1TargetEst",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
-                    }                    ,
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Decimal
+                    },
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
-                        Name = "52WeekRange",
+                        Name = "52WeekRangeLow",
                         ServiceMode = WebsiteNodes.ServiceModes.XPATH,
                         FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
-                        ColumnName = "52WeekRange",
+                        ColumnName = "52WeekRangeLow",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "..."
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "52WeekRangeHigh",
+                        ServiceMode = WebsiteNodes.ServiceModes.XPATH,
+                        FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
+                        DataLocation = WebsiteNodes.DataLocations.InnerText,
+                        ColumnName = "52WeekRangeHigh",
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -70,7 +81,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerHtml,
                         ColumnName = "Volume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "..."
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Int
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -81,7 +92,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "AvgVolume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "decimal"
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Int
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -93,8 +104,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         LeftSEMaxDistance = 40,
                         SearchElementRight = "\",\"",
                         ColumnName = "Sector",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "string"
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" }
+                        //jaka konwersja? nie chcę opisywać tekstowo sektorów, aby oszczędzać miejsce w bazie
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -107,11 +118,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",\"",
                         ColumnName = "Sector",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        Type = "string"
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Decimal
                     }
-
-
-
                 }
             };
 

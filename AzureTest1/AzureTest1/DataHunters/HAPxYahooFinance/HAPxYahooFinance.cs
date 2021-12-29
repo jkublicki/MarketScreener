@@ -11,11 +11,12 @@ using System.Diagnostics;
 /*
  * todo:
  * 
- * błąd: przypadek ATD.WA - nie ma recommendation rating, znajduje BeforeLeft i za nim Left, ale to nie ten co trzeba
- * dorobić przeszukiwanie a la pierwszy Service() - przeszukanie html-a
- * 1. dorobić strukturę bazy i zapis do bazy
- * - co z konwersją, np. 52w range?
- * - potem uporządkować klasy node i nodeSet
+ * //błąd: przypadek ATD.WA - nie ma recommendation rating, znajduje BeforeLeft i za nim Left, ale to nie ten co trzeba
+ * //dorobić przeszukiwanie a la pierwszy Service() - przeszukanie html-a
+ * //1. dorobić strukturę bazy 
+ * ...i zapis do bazy
+ * //- co z konwersją, np. 52w range?
+ * //- potem uporządkować klasy node i nodeSet
  * 2. dorobić timer i powolne, odpowiedzialne działanie
  * 3. dorabiać kolejne node-y dla strony yahoo finance i rozwiązywać na bieżąco problemy z uzyskaniem node-a wg. XPATH i wartości z node-a
  * 4. dorobić log
@@ -66,18 +67,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             return tickers;
         }
-
-        
-
-        private static WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = new WebsiteNodes.WebsiteNodeSet();
-
-        
+       
 
         public static string Service1a()
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
             List<string> tickers = GetYahooTickers();
-            yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
+            WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
             
 
             var web = new HtmlAgilityPack.HtmlWeb();
