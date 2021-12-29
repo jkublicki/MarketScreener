@@ -23,9 +23,11 @@ namespace MarketScreener.Test
             {
                 Console.WriteLine(s);
             }
-            Console.ReadLine();
+            //Console.ReadLine();
 
-            DataHunters.HAPxYahooFinance.Service();
+            Console.WriteLine("--- przed service");
+            Console.WriteLine(DataHunters.HAPxYahooFinance.Service1());
+            Console.WriteLine("--- po service");
         }
     }
 }
