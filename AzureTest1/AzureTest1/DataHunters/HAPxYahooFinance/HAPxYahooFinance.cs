@@ -25,7 +25,7 @@ using System.Diagnostics;
  * teraz: https://html-agility-pack.net/select-nodes
  * - bo se nie mają przyszłości i zaczęły powodować problemy
  * 
- * 
+ * concaty
  * opanować Debug.WriteLine https://stackoverflow.com/questions/9466838/writing-to-output-window-of-visual-studio
  * opanować debugowanie (breakpoint, watch), coś jest nie tak
  * sprawdzić wyłuskiwanie danych ze strony yahoo finance
@@ -73,11 +73,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
             List<string> tickers = GetYahooTickers();
-            WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
-            
+            WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();            
 
             var web = new HtmlAgilityPack.HtmlWeb();
-
             string result = "\nHAPxYahooFinance.Service1a() result:\n\n";
 
             if (tickers.Count > 0)
@@ -86,28 +84,18 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 {
                     string url = urlBase + t;
                     var doc = web.Load(url);
-
                     doc.Save("doc_" + t + ".txt");
-
-                    Debug.WriteLine("debug: t = " + t);
-
+                    //Debug.WriteLine("debug: t = " + t);
                     yahooEquityNodeSet.Ticker = t;
-                    
-                    
-
                     
                     foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
-                        Debug.WriteLine("debug: node = " + n.Name + "\n");
-
+                        //Debug.WriteLine("debug: node = " + n.Name + "\n");
                         if (n.ServiceMode == WebsiteNodes.ServiceModes.XPATH)
                         {                            
                             try
                             {
-                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(
-                                    n.FullXPATH
-                                    ).First();
-
+                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First();
                                 string dataPoint = "NULL";
 
                                 if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
@@ -120,9 +108,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception)
                                     {
                                         result = result + "Data point value acquisition (AttributeValue) failed for " + t + ", " + n.Name + "\n";
-                                        Debug.WriteLine("Data point value acquisition (AttributeValue) failed for " + t + ", " + n.Name + "\n");
+                                        //Debug.WriteLine("Data point value acquisition (AttributeValue) failed for " + t + ", " + n.Name + "\n");
                                     }
-
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
                                 {
@@ -134,7 +121,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception)
                                     {
                                         result = result + "Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n";
-                                        Debug.WriteLine("Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n");
+                                        //Debug.WriteLine("Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n");
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
@@ -147,11 +134,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception)
                                     {
                                         result = result + "Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n";
-                                        Debug.WriteLine("Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n");
+                                        //Debug.WriteLine("Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n");
                                     }
                                 }
-
-
                                 result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
                             }
@@ -164,9 +149,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         else if (n.ServiceMode == WebsiteNodes.ServiceModes.DOCTEXT)
                         {
                             string docText = doc.Text;
-
                             int idxBeg0 = docText.IndexOf(n.SearchElementBeforeLeft);
-
                             bool success = true;
                             
                             if (idxBeg0 != -1)
@@ -180,43 +163,32 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance)
                                     {
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
-
                                         n.Value = dataPoint;
-
                                         result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
-                                        Debug.WriteLine(t + " search indexes: " + idxBeg.ToString() + ", " + idxEnd.ToString());
+                                        //Debug.WriteLine(t + " search indexes: " + idxBeg.ToString() + ", " + idxEnd.ToString());
                                     }
                                     else
-                                    {
-                                        success = false;
-                                    }                                    
+                                        success = false;                
                                 }
                                 else
-                                {
                                     success = false;
-                                }
                             }
                             else
-                            {
-                               success = false;
-                            }
+                                success = false;
 
                             if (!success)
                             {
                                 result = result + "Text search failed for " + t + ", node " + n.Name + "\n";
                                 Debug.WriteLine("Text search failed for " + t + ", node " + n.Name + "\n");
-                            }
-                            
-                        }
-
-                        
+                            }                            
+                        }                        
                     }
 
+                    //Debug.WriteLine("debug: result = " + result);
                     
-
-                    Debug.WriteLine("debug: result = " + result);
-
+                    //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
+                    //dorobić zapis do bazy
                 }
             }
 
@@ -231,7 +203,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 return yt;
             else
                 throw new Exception("Błąd w DataHunters.GetYahooTickers()");
-
         }
     }
 }

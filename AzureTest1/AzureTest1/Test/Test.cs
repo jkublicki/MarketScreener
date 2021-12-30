@@ -12,7 +12,8 @@ namespace MarketScreener.Test
         static void Main(string[] args)
         {
             //test
-            //Console.WriteLine((DataHunters.HAPxYahooFinance.NodeConverters.DecimalRangeRight("123.45 - 123.99", out _) + 1).ToString());
+            
+            Console.WriteLine(DataHunters.HAPxYahooFinance.NodeConverters.YFMarketCapToMillion("1T", out bool x).ToString() + ", success: " + x.ToString());
 
 
 
