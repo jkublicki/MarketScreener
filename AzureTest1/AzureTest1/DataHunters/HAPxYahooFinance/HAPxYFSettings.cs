@@ -119,14 +119,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
-                        Name = "MarketCap",
+                        Name = "MarketCapMnUSD",
                         ServiceMode = WebsiteNodes.ServiceModes.XPATH,
                         FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[1]/td[2]",
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
-                        ColumnName = "MarketCap",
+                        ColumnName = "MarketCapMnUSD",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.YFMarketCapToMillion
-                    },               
+                    },
+                    /*
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -137,9 +138,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         LeftSEMaxDistance = 40,
                         SearchElementRight = "\",\"",
                         ColumnName = "Sector",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" }
-                        //jaka konwersja? nie chcę opisywać tekstowo sektorów, aby oszczędzać miejsce w bazie
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.GICS
                     },
+                    */
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -149,7 +151,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementBeforeLeft = "recommendationMean",
                         LeftSEMaxDistance = 10,
                         SearchElementRight = ",\"",
-                        ColumnName = "Sector",
+                        ColumnName = "RecommendationRating",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
                     }

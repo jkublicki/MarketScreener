@@ -34,7 +34,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             public string SearchElementLeft; //charakterystyczny stały tekst poprzedzający dane, tylko dla DOCTEXT
             public int LeftSEMaxDistance;
             public string SearchElementRight; //jw. występujący po danych
-            public string Value;
+            public string? Value;
             public NodeConverters.ConvertingFunctions ConverterFunction;
             public string ColumnName;
             public List<string> Tables; //zakładając, że update wielu tabel, ale tabele mają tak samo nazwane kolumny odpowiadające temu punktowi danych

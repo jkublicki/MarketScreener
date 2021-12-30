@@ -11,31 +11,20 @@ namespace MarketScreener.Test
     {
         static void Main(string[] args)
         {
-            //test
-            
-            Console.WriteLine(DataHunters.HAPxYahooFinance.NodeConverters.YFMarketCapToMillion("1T", out bool x).ToString() + ", success: " + x.ToString());
-
-
-
-            //test 
-
             Console.WriteLine("Start");
-
+            Console.WriteLine("QueryDatabase.Test():");
             QueryDatabase.Test();
 
-            Debug.WriteLine("wtf");
-
-            //test HAPxYahooFinance
+            Console.WriteLine("HAPxYahooFinance.Test():");
             List<string> r = DataHunters.HAPxYahooFinance.HAPxYahooFinance.Test();
             foreach(string s in r)
             {
                 Console.WriteLine(s);
             }
-            //Console.ReadLine();
 
-            Console.WriteLine("--- przed service");
-            Console.WriteLine(DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service1a());
-            Console.WriteLine("--- po service");
+            Console.WriteLine("Przed DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service()\n");
+            Console.WriteLine(DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service());
+            Console.WriteLine("\nPo DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service()");
         }
     }
 }

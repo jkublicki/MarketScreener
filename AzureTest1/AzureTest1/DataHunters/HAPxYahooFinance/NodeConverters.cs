@@ -22,9 +22,55 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             EvalInt,
             DecimalRangeLeft,
             DecimalRangeRight,
+            Varchar,
             YFMarketCapToMillion,
             GICS
         }
+
+
+        public static string ConvertValue(string value, ConvertingFunctions converter, out bool success)
+        {
+            switch (converter)
+            {
+                case ConvertingFunctions.None:
+                    success = true;
+                    return value;
+                case ConvertingFunctions.EvalDecimal:
+                    string v1 = EvalDecimal(value, out bool s1);
+                    success = s1;
+                    return v1;
+                case ConvertingFunctions.EvalInt:
+                    string v2 = EvalInt(value, out bool s2);
+                    success = s2;
+                    return v2; 
+                case ConvertingFunctions.DecimalRangeLeft:
+                    string v3 = DecimalRangeLeft(value, out bool s3);
+                    success = s3;
+                    return v3;
+                case ConvertingFunctions.DecimalRangeRight:
+                    string v4 = DecimalRangeRight(value, out bool s4);
+                    success = s4;
+                    return v4;
+                case ConvertingFunctions.YFMarketCapToMillion:
+                    string v5 = YFMarketCapToMillion(value, out bool s5);
+                    success = s5;
+                    return v5;
+                case ConvertingFunctions.GICS:
+                    //todo!!
+                            success = true;
+                            return "'1;1;1'";
+                case ConvertingFunctions.Varchar:
+                    success = true;
+                    return String.Concat("'", value, "'");
+
+                default:
+                    success = false;
+                    return "NodeConverters.ConvertValue() failed";
+
+            }
+
+        }
+
 
         //public static (int, int, int) GICS(string dataPoint, out bool success)
         //zrobić w bazie słownik GICS i korzystać z niego wewnątrz tej metody (ale to podwaja ilość połączeń do bazy, może lepiej mieć GICS tutaj)
@@ -34,7 +80,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         
 
 
-        public static string YFMarketCapToMillion(string dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
+
+        private static string YFMarketCapToMillion(string dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -60,7 +107,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        public static string EvalInt(string dataPoint, out bool success)
+        private static string EvalInt(string dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -75,7 +122,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        public static string EvalDecimal(string dataPoint, out bool success)
+        private static string EvalDecimal(string dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -98,7 +145,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
 
         
-        public static string DecimalRangeLeft(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeLeft(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -115,17 +162,12 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            Debug.WriteLine(s);
-            Debug.WriteLine(s.Split(' ').First());
-
             success = Decimal.TryParse(s.Split(' ').First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-
-            Debug.WriteLine(success.ToString() + ", " + result.ToString(CultureInfo.CreateSpecificCulture("en-US")));
 
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        public static string DecimalRangeRight(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeRight(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -142,12 +184,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            Debug.WriteLine(s);
-            Debug.WriteLine(s.Split(' ').Last());
-
             success = Decimal.TryParse(s.Split(' ').Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-
-            Debug.WriteLine(success.ToString() + ", " + result.ToString(CultureInfo.CreateSpecificCulture("en-US")));
 
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }

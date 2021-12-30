@@ -14,7 +14,7 @@ using System.Diagnostics;
  * //błąd: przypadek ATD.WA - nie ma recommendation rating, znajduje BeforeLeft i za nim Left, ale to nie ten co trzeba
  * //dorobić przeszukiwanie a la pierwszy Service() - przeszukanie html-a
  * //1. dorobić strukturę bazy 
- * ...i zapis do bazy
+ * //...i zapis do bazy
  * //- co z konwersją, np. 52w range?
  * //- potem uporządkować klasy node i nodeSet
  * 2. dorobić timer i powolne, odpowiedzialne działanie
@@ -69,7 +69,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
        
 
-        public static string Service1a()
+        public static string Service()
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
             List<string> tickers = GetYahooTickers();
@@ -87,16 +87,24 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     doc.Save("doc_" + t + ".txt");
                     //Debug.WriteLine("debug: t = " + t);
                     yahooEquityNodeSet.Ticker = t;
-                    
+
+                    string updateSQL = "";
+                    string insertSQLColumns = "";
+                    string insertSQLValues = "";
+
                     foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
+                        n.Value = null; //bez tego przeniosłoby wartość z poprzedniego tickera!
+
+                        n.Ticker = t;
+
                         //Debug.WriteLine("debug: node = " + n.Name + "\n");
                         if (n.ServiceMode == WebsiteNodes.ServiceModes.XPATH)
                         {                            
                             try
                             {
                                 HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First();
-                                string dataPoint = "NULL";
+                                string? dataPoint = null; 
 
                                 if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
                                 {
@@ -143,7 +151,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             catch (Exception)
                             {
                                 result = result + "DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n";
-                                Debug.WriteLine("DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n");
+                                //Debug.WriteLine("DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n");
                             }
                         }
                         else if (n.ServiceMode == WebsiteNodes.ServiceModes.DOCTEXT)
@@ -180,15 +188,58 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             if (!success)
                             {
                                 result = result + "Text search failed for " + t + ", node " + n.Name + "\n";
-                                Debug.WriteLine("Text search failed for " + t + ", node " + n.Name + "\n");
+                                //Debug.WriteLine("Text search failed for " + t + ", node " + n.Name + "\n");
                             }                            
-                        }                        
+                        }
+
+                        //Debug.WriteLine("debug: result = " + result);
+
+                        
+
+                        //to nadal są flaczki pętli po node-ach
+
+                        string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, out bool su);
+                        if (su)
+                            n.Value = s;
+                        else
+                        {
+                            n.Value = "NULL";
+                            result += String.Concat("Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
+                        }
+
+                        updateSQL += String.Concat(n.ColumnName, " = ", n.Value, ", ");
+                        insertSQLColumns += String.Concat(n.ColumnName, ", ");
+                        insertSQLValues += String.Concat(n.Value, ", ");
+
                     }
 
-                    //Debug.WriteLine("debug: result = " + result);
-                    
+
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
-                    //dorobić zapis do bazy
+                    //dorobić zapis do bazy, tutaj wywołać                    
+                    //po przetestowaniu zapisu do bazy usunąc zbędne pola klas z website nodes
+
+                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = '", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                        "' WHERE TickerYahoo = '", t, "'");
+                    string insertSQL = String.Concat("INSERT INTO TICKER_HISTORY (", insertSQLColumns, " UpdateDate, SnapshotDate, TickerGoogleFinance) VALUES (",
+                        insertSQLValues, "'", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.Today.ToString("yyyy-MM-dd"), 
+                        "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
+
+                    //result += String.Concat("SQL: \n", updateSQL, "\n", insertSQL, "\n");
+
+                    int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
+                    if (updatedRows == -1)
+                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
+                    else
+                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", updateSQL, "\n");
+
+
+                    int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
+                    if (insertedRows == -1)
+                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie
+                    else
+                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", insertSQL, "\n");
+
+
                 }
             }
 
