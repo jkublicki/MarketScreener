@@ -126,8 +126,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         ColumnName = "MarketCapMnUSD",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.YFMarketCapToMillion
-                    },
-                    /*
+                    },                    
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -137,11 +136,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementBeforeLeft = "summaryProfile",
                         LeftSEMaxDistance = 40,
                         SearchElementRight = "\",\"",
-                        ColumnName = "Sector",
-                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.GICS
-                    },
-                    */
+                        ColumnName = "GICSSector",
+                        Tables = new List<string>() { "ENU_TICKER" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.GICSSector
+                    },                    
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",

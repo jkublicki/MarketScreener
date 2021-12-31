@@ -11,20 +11,33 @@ namespace MarketScreener.Test
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Start");
-            Console.WriteLine("QueryDatabase.Test():");
-            QueryDatabase.Test();
+            //nie kasować testów, potem zrobić metodę diagnostyczną i porównanie wyników
 
+            //Console.WriteLine(GICS.GetGICSCodeAndCategory("TECHNOLOGY").Item1.ToString());
+
+            //DataHunters.HAPxYahooFinance.HAPxYFManager.StartTimer();
+
+            //Console.ReadLine();
+
+            
+            Console.WriteLine("Start");
+            //Console.WriteLine("QueryDatabase.Test():");
+            //QueryDatabase.Test();
+
+            /*
             Console.WriteLine("HAPxYahooFinance.Test():");
             List<string> r = DataHunters.HAPxYahooFinance.HAPxYahooFinance.Test();
             foreach(string s in r)
             {
                 Console.WriteLine(s);
             }
+            */
 
             Console.WriteLine("Przed DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service()\n");
             Console.WriteLine(DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service());
             Console.WriteLine("\nPo DataHunters.HAPxYahooFinance.HAPxYahooFinance.Service()");
+            
+            
         }
     }
 }

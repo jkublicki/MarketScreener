@@ -24,7 +24,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             DecimalRangeRight,
             Varchar,
             YFMarketCapToMillion,
-            GICS
+            GICSSector
         }
 
 
@@ -55,10 +55,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     string v5 = YFMarketCapToMillion(value, out bool s5);
                     success = s5;
                     return v5;
-                case ConvertingFunctions.GICS:
-                    //todo!!
-                            success = true;
-                            return "'1;1;1'";
+                case ConvertingFunctions.GICSSector:
+                    string v6 = GICSSector(value, out bool s6);
+                    success = s6;
+                    return v6;
                 case ConvertingFunctions.Varchar:
                     success = true;
                     return String.Concat("'", value, "'");
@@ -72,12 +72,27 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
 
 
-        //public static (int, int, int) GICS(string dataPoint, out bool success)
-        //zrobić w bazie słownik GICS i korzystać z niego wewnątrz tej metody (ale to podwaja ilość połączeń do bazy, może lepiej mieć GICS tutaj)
-        //w takim słowniku powinno być average PE (DM, EM), a to z kolei będzie potrzebne w bazie do oceny PE
-        //trzymać słownik w pliku, jak nie ma pliku to sięgnąć do bazy i zrobić plik, może raz na tydzień kasować plik w ramach synchronizacji
-        //czytanie pliku co chwilę (co ticker) też jest głupie, trzymać to w zmiennej, jak pusta, załadować z pliku, reszta jw.
-        
+        public static string GICSSector(string dataPoint, out bool success)
+        {
+            if (dataPoint == null || dataPoint == "")
+            {
+                success = true;
+                return "NULL";
+            }
+
+            (int, string) gicsResult = MarketScreener.GICS.GetGICSCodeAndCategory(dataPoint);
+
+            if (gicsResult.Item1 == -1 || gicsResult.Item2 != "Sector")
+            {
+                success = false;
+                return "NULL";
+            }
+            else
+            {
+                success = false;
+                return gicsResult.Item1.ToString();
+            }
+        }
 
 
 

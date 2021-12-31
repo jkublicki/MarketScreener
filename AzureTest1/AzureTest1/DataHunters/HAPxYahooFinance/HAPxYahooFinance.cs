@@ -207,16 +207,20 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             result += String.Concat("Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
                         }
 
-                        updateSQL += String.Concat(n.ColumnName, " = ", n.Value, ", ");
-                        insertSQLColumns += String.Concat(n.ColumnName, ", ");
-                        insertSQLValues += String.Concat(n.Value, ", ");
+                        if (n.Tables.Contains("ENU_TICKER"))
+                            updateSQL += String.Concat(n.ColumnName, " = ", n.Value, ", ");
+
+                        if (n.Tables.Contains("TICKER_HISTORY"))
+                        {
+                            insertSQLColumns += String.Concat(n.ColumnName, ", ");
+                            insertSQLValues += String.Concat(n.Value, ", ");
+                        }
+                        
 
                     }
 
 
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
-                    //dorobić zapis do bazy, tutaj wywołać                    
-                    //po przetestowaniu zapisu do bazy usunąc zbędne pola klas z website nodes
 
                     updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = '", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                         "' WHERE TickerYahoo = '", t, "'");
@@ -224,7 +228,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         insertSQLValues, "'", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.Today.ToString("yyyy-MM-dd"), 
                         "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
 
-                    //result += String.Concat("SQL: \n", updateSQL, "\n", insertSQL, "\n");
 
                     int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                     if (updatedRows == -1)
