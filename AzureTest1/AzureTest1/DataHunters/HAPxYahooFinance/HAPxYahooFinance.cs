@@ -49,34 +49,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 {
     internal static class HAPxYahooFinance
     {
-        private static List<string> GetYahooTickers()
-        {
-            List<string> tickers = new List<string>();
-            string query = "SELECT TickerYahoo FROM ENU_TICKER WHERE TickerYahoo IS NOT NULL";            
-            int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
+     
 
-            
-            if (rows > 0)
-            {
-                foreach(DataRow row in dataTable.Rows)
-                {
-                    if (row != null && !row.IsNull(0))
-                        tickers.Add(row.ItemArray[0].ToString());
-                }
-            }
-
-            return tickers;
-        }
-       
-
-        public static string Service()
+        public static string Service(List<string> tickers)
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
-            List<string> tickers = GetYahooTickers();
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();            
 
             var web = new HtmlAgilityPack.HtmlWeb();
-            string result = "\nHAPxYahooFinance.Service1a() result:\n\n";
+            string result = "HAPxYahooFinance.Service1a() result:\n";
 
             if (tickers.Count > 0)
             {
@@ -145,6 +126,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                         //Debug.WriteLine("Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n");
                                     }
                                 }
+
+                                //odkomentować do badania szczegółów
                                 result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
                             }
@@ -172,7 +155,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     {
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
                                         n.Value = dataPoint;
-                                        result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
+                                        //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
                                         //Debug.WriteLine(t + " search indexes: " + idxBeg.ToString() + ", " + idxEnd.ToString());
                                     }
@@ -232,15 +215,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                     if (updatedRows == -1)
                         result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
-                    else
-                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", updateSQL, "\n");
+                    //else
+                        //result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", updateSQL, "\n");
 
 
                     int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
                     if (insertedRows == -1)
                         result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie
-                    else
-                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", insertSQL, "\n");
+                    //else
+                        //result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", insertSQL, "\n");
 
 
                 }
@@ -249,14 +232,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result;
         }
 
-        public static List<string> Test()
-        {
-            List<string> yt = GetYahooTickers();
 
-            if (yt.Count > 0)
-                return yt;
-            else
-                throw new Exception("Błąd w DataHunters.GetYahooTickers()");
-        }
     }
 }

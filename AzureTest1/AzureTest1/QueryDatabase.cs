@@ -49,7 +49,10 @@ namespace MarketScreener
                 }
                 catch (SqlException e)
                 {
-                    Console.WriteLine(e);
+                    if (Log.Enabled)
+                        Log.Entry(e.Message);
+
+
                     if (throwError)
                     {
                         throw e;                        
@@ -86,7 +89,10 @@ namespace MarketScreener
             catch (SqlException e)
             {
                 success = false;
-                Console.WriteLine(e);
+
+                if (Log.Enabled)
+                    Log.Entry(e.Message);
+
                 if (throwError)
                 {
                     throw e;
@@ -96,40 +102,5 @@ namespace MarketScreener
             }
         }
 
-        public static void Test()
-        {
-            string cs = Secrets.ConnectionString;
-            string q = String.Concat("INSERT INTO ENU_TICKER (TickerGoogleFinance) VALUES ('test_", Guid.NewGuid().ToString().AsSpan(0, 7), "')");
-            int rows = ExecuteSQLStatement(cs, q, true, out bool _);
-
-            if (rows != -1)
-            {
-                Console.WriteLine(rows.ToString() + " rows affected");
-            }
-            else
-            {
-                throw new Exception("Błąd w QueryDatabase.Test() - non query");
-            }
-
-
-            q = "SELECT TOP 3 TickerGoogleFinance FROM ENU_TICKER";
-            rows = ExecuteSQLStatement(cs, q, true, out DataTable d);
-
-            if (rows != -1 && d != null && d.Rows.Count > 0 && d.Rows[0].ItemArray.Count() > 0)
-            {
-                Console.WriteLine(rows.ToString() + " rows affected");
-                Console.WriteLine(d.Rows[0].ItemArray[0].ToString());
-            }
-            else
-            {
-                throw new Exception("Błąd w QueryDatabase.Test() - query");
-            }
-
-
-
-
-
-
-        }
     }
 }
