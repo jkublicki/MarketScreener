@@ -71,11 +71,17 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 foreach (string t in tickers)
                 {
                     string url = urlBase + t;
-                    var doc = web.Load(url);
 
-                    if (doc == null)
+                    HtmlAgilityPack.HtmlDocument? doc;
+
+                    try
                     {
-                        result = String.Concat(result, "Skipping ticker ", t,", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,"\n");
+                        doc = web.Load(url);
+                    }
+                    catch (Exception ex)
+                    {
+                        result = String.Concat(result, "Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url, 
+                            ". Full exception: ", ex, "\n");
                         continue; //pomiń ciąg dalszy tej iteracji
                     }
 
