@@ -35,8 +35,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 "AND EH.MarketCodeGoogleFinance = LEFT(ET.TickerGoogleFinance, CHARINDEX(':', ET.TickerGoogleFinance) - 1))"
                 );
 
-            Console.WriteLine(query);
-
             int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
 
             if (rows > 0)
@@ -63,7 +61,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             if (Log.Enabled)
                 Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));
 
-            string result = HAPxYahooFinance.Service(tickers);
+            string result = HAPxYahooFinance.Service(tickers, 1500);
 
             if (Log.Enabled)
                 Log.Entry(result[..^1]);

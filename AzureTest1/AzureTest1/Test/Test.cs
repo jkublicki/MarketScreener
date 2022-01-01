@@ -14,6 +14,10 @@ namespace MarketScreener.Test
 
             
 
+
+            //  Console.WriteLine(SelfTest.RunSelfTest(out bool _));
+
+
             //nie kasować testów, potem zrobić metodę diagnostyczną i porównanie wyników
 
             //Console.WriteLine(GICS.GetGICSCodeAndCategory("TECHNOLOGY").Item1.ToString());

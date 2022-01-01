@@ -51,13 +51,20 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
     {
      
 
-        public static string Service(List<string> tickers)
+        public static string Service(List<string> tickers, int tickerSleepMs)
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
-            WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();            
+            WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
+
+            string result = "HAPxYahooFinance.Service() result:\n";
 
             var web = new HtmlAgilityPack.HtmlWeb();
-            string result = "HAPxYahooFinance.Service() result:\n";
+
+            if (web == null)
+            {
+                result = String.Concat(result, "HtmlAgilityPack.HtmlWeb() failed\n");
+                return result;
+            }
 
             if (tickers.Count > 0)
             {
@@ -65,8 +72,17 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 {
                     string url = urlBase + t;
                     var doc = web.Load(url);
-                    doc.Save("doc_" + t + ".txt");
-                    //Debug.WriteLine("debug: t = " + t);
+
+                    if (doc == null)
+                    {
+                        result = String.Concat(result, "Skipping ticker ", t,", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,"\n");
+                        continue; //pomiń ciąg dalszy tej iteracji
+                    }
+
+                    //PRZYDATNE!!
+                    //zapis pobranego źródła strony, odkomentować do debuga
+                    //doc.Save("doc_" + t + ".txt");
+
                     yahooEquityNodeSet.Ticker = t;
 
                     string updateSQL = "";
@@ -76,10 +92,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
                         n.Value = null; //bez tego przeniosłoby wartość z poprzedniego tickera!
-
                         n.Ticker = t;
 
-                        //Debug.WriteLine("debug: node = " + n.Name + "\n");
                         if (n.ServiceMode == WebsiteNodes.ServiceModes.XPATH)
                         {                            
                             try
@@ -96,8 +110,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     }
                                     catch (Exception)
                                     {
-                                        result = result + "Data point value acquisition (AttributeValue) failed for " + t + ", " + n.Name + "\n";
-                                        //Debug.WriteLine("Data point value acquisition (AttributeValue) failed for " + t + ", " + n.Name + "\n");
+                                        result = String.Concat(result, "Data point value acquisition (AttributeValue) failed for ", t, ", ", n.Name, "\n");
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
@@ -109,8 +122,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     }
                                     catch (Exception)
                                     {
-                                        result = result + "Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n";
-                                        //Debug.WriteLine("Data point value acquisition (InnerText) failed for " + t + ", " + n.Name + "\n");
+                                        result = String.Concat(result, "Data point value acquisition (InnerText) failed for ", t, ", ", n.Name, "\n");
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
@@ -122,20 +134,18 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     }
                                     catch (Exception)
                                     {
-                                        result = result + "Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n";
-                                        //Debug.WriteLine("Data point value acquisition (InnerHtml) failed for " + t + ", " + n.Name + "\n");
+                                        result = String.Concat(result, "Data point value acquisition (InnerHtml) failed for ", t, ", ", n.Name, "\n");
                                     }
                                 }
 
                                 //PRZYDATNE!!
                                 //odkomentować do badania szczegółów - 1 z 2
-                                result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
+                                //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
                             }
                             catch (Exception)
                             {
-                                result = result + "DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n";
-                                //Debug.WriteLine("DocumentNode.SelectNodes failed for " + t + ", node " + n.Name + "\n");
+                                result = String.Concat(result, "DocumentNode.SelectNodes() failed for ", t, ", node ", n.Name, "\n");
                             }
                         }
                         else if (n.ServiceMode == WebsiteNodes.ServiceModes.DOCTEXT)
@@ -155,18 +165,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance)
                                     {
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
-
-                                        Console.WriteLine("... " + dataPoint);
                                         n.Value = dataPoint;
-                                        Console.WriteLine("... " + n.Value);
 
                                         //PRZYDATNE!!
                                         //odkomentować do badania szczegółów - 2 z 2
                                         //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
-
-                                        Console.WriteLine(t + ", " + n.Name + ": " + dataPoint + "\n");
-
-                                        //Debug.WriteLine(t + " search indexes: " + idxBeg.ToString() + ", " + idxEnd.ToString());
                                     }
                                     else
                                         success = false;                
@@ -179,24 +182,16 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                             if (!success)
                             {
-                                result = result + "Text search failed for " + t + ", node " + n.Name + "\n";
-                                //Debug.WriteLine("Text search failed for " + t + ", node " + n.Name + "\n");
+                                result = String.Concat(result, "Text search failed for ", t, ", node ", n.Name, "\n");
                             }                            
                         }
-
-                        
-                        //Debug.WriteLine("debug: result = " + result);
-
-
-
-                        //to nadal są flaczki pętli po node-ach
 
                         string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, out bool su);
                         if (su)
                             n.Value = s;
                         else
                         {                            
-                            result += String.Concat("Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
+                            result = String.Concat(result, "Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
                             n.Value = "NULL";
                         }
 
@@ -208,10 +203,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             insertSQLColumns += String.Concat(n.ColumnName, ", ");
                             insertSQLValues += String.Concat(n.Value, ", ");
                         }
-                        
-
                     }
-
 
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
 
@@ -221,21 +213,17 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         insertSQLValues, "'", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.Today.ToString("yyyy-MM-dd"), 
                         "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
 
-
                     int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                     if (updatedRows == -1)
-                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
-                    //else
-                        //result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", updateSQL, "\n");
-
-
+                        result = String.Concat(result, "QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
+                    
                     int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
                     if (insertedRows == -1)
-                        result += String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie
-                    //else
-                        //result += String.Concat("QueryDatabase.ExecuteSQLStatement() worked for query: ", insertSQL, "\n");
+                        result = String.Concat(result, "QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
 
-
+                    decimal rand = (decimal)(new Random().NextDouble() * 0.2 + 1); //zgodnie z praktykami (nie za szybko, losowo) https://www.scrapehero.com/how-to-prevent-getting-blacklisted-while-scraping/
+                    int sleep = (int)Math.Floor(tickerSleepMs * rand);                    
+                    Thread.Sleep(sleep);
                 }
             }
 

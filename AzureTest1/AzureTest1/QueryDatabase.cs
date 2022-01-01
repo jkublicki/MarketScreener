@@ -50,7 +50,7 @@ namespace MarketScreener
                 catch (SqlException e)
                 {
                     if (Log.Enabled)
-                        Log.Entry(e.Message);
+                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed with message: ", e.Message, ". Full exception: ", e.ToString()));
 
 
                     if (throwError)
@@ -91,7 +91,7 @@ namespace MarketScreener
                 success = false;
 
                 if (Log.Enabled)
-                    Log.Entry(e.Message);
+                    Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed with message: ", e.Message, ". Full exception: ", e.ToString()));
 
                 if (throwError)
                 {
