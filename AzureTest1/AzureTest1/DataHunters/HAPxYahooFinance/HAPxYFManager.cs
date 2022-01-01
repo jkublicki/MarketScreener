@@ -22,14 +22,21 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
         private static List<string> GetYahooTickers()
         {
-            //dodać omijanie świąt
-            //uzupełnić słownik świąt, teraz są tylko weekendy
-
-
+  
             List<string> tickers = new List<string>();
-            string query = String.Concat("SELECT TOP ", batchSize.ToString(), 
-                " TickerYahoo FROM ENU_TICKER WHERE TickerYahoo IS NOT NULL AND (UpdateDate IS NULL OR CAST(UpdateDate AS date) < CAST(GETDATE() AS date))"
+
+            //todo: uzupełnić słownik świąt, teraz są tylko weekendy
+
+            //niepuste tickery yahoo, brak lub niedzisiejsza data aktualizacji, brak święta dzisiaj dla tego rynku
+            string query = String.Concat("SELECT TOP ", batchSize.ToString(),
+                " TickerYahoo FROM ENU_TICKER ET WHERE TickerYahoo IS NOT NULL ",
+                "AND (UpdateDate IS NULL OR CAST(UpdateDate AS date) < CAST(GETDATE() AS date)) ",
+                "AND NOT EXISTS (SELECT 1 FROM ENU_HOLIDAY EH WHERE EH.HolidayDate = CAST(GETDATE() AS date) ",
+                "AND EH.MarketCodeGoogleFinance = LEFT(ET.TickerGoogleFinance, CHARINDEX(':', ET.TickerGoogleFinance) - 1))"
                 );
+
+            Console.WriteLine(query);
+
             int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
 
             if (rows > 0)
