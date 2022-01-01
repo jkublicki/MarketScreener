@@ -33,7 +33,7 @@ namespace MarketScreener
             catch (Exception e)
             {
                 success = false;
-                Console.WriteLine("Logger.Save() exception caught: " + e);
+                //Console.WriteLine("Logger.Save() exception caught: " + e);
             }
             finally
             {

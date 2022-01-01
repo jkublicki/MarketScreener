@@ -23,9 +23,6 @@ namespace MarketScreener
 
         public static (int, string) GetGICSCodeAndCategory(string descriptionGICS)
         {
-            Console.WriteLine(descriptionGICS);
-
-
             const int maxLD = 2;
             string desc = descriptionGICS.ToUpper();
 

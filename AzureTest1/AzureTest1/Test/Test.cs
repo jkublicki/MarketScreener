@@ -12,8 +12,7 @@ namespace MarketScreener.Test
         static void Main(string[] args)
         {
 
-            //Console.WriteLine(GICS.GetGICSCodeAndCategory("Industrials").ToString());
-
+            
 
             //nie kasować testów, potem zrobić metodę diagnostyczną i porównanie wyników
 

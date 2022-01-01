@@ -10,7 +10,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 {
     internal static class HAPxYFManager
     {
-        const int batchSize = 5;
+        const int batchSize = 2;
 
         public static DataHunterStatus Status;
 
@@ -22,6 +22,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
         private static List<string> GetYahooTickers()
         {
+            //dodać omijanie świąt
+            //uzupełnić słownik świąt, teraz są tylko weekendy
+
+
             List<string> tickers = new List<string>();
             string query = String.Concat("SELECT TOP ", batchSize.ToString(), 
                 " TickerYahoo FROM ENU_TICKER WHERE TickerYahoo IS NOT NULL AND (UpdateDate IS NULL OR CAST(UpdateDate AS date) < CAST(GETDATE() AS date))"
@@ -55,7 +59,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             string result = HAPxYahooFinance.Service(tickers);
 
             if (Log.Enabled)
-                Log.Entry(result[..^2]);
+                Log.Entry(result[..^1]);
 
             Status = DataHunterStatus.OFF;
 

@@ -57,7 +57,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();            
 
             var web = new HtmlAgilityPack.HtmlWeb();
-            string result = "HAPxYahooFinance.Service1a() result:\n";
+            string result = "HAPxYahooFinance.Service() result:\n";
 
             if (tickers.Count > 0)
             {
@@ -127,7 +127,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     }
                                 }
 
-                                //odkomentować do badania szczegółów
+                                //PRZYDATNE!!
+                                //odkomentować do badania szczegółów - 1 z 2
                                 result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
 
                             }
@@ -154,8 +155,16 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance)
                                     {
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
+
+                                        Console.WriteLine("... " + dataPoint);
                                         n.Value = dataPoint;
+                                        Console.WriteLine("... " + n.Value);
+
+                                        //PRZYDATNE!!
+                                        //odkomentować do badania szczegółów - 2 z 2
                                         //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
+
+                                        Console.WriteLine(t + ", " + n.Name + ": " + dataPoint + "\n");
 
                                         //Debug.WriteLine(t + " search indexes: " + idxBeg.ToString() + ", " + idxEnd.ToString());
                                     }
@@ -175,9 +184,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             }                            
                         }
 
+                        
                         //Debug.WriteLine("debug: result = " + result);
 
-                        
+
 
                         //to nadal są flaczki pętli po node-ach
 
@@ -185,9 +195,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         if (su)
                             n.Value = s;
                         else
-                        {
-                            n.Value = "NULL";
+                        {                            
                             result += String.Concat("Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
+                            n.Value = "NULL";
                         }
 
                         if (n.Tables.Contains("ENU_TICKER"))

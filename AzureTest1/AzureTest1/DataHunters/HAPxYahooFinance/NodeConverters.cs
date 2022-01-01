@@ -82,6 +82,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             (int, string) gicsResult = GICS.GetGICSCodeAndCategory(dataPoint);
 
+            
             if (gicsResult.Item1 == -1 || gicsResult.Item2 != "Sector")
             {
                 success = false;
@@ -89,7 +90,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
             else
             {
-                success = false;
+                success = true;
                 return gicsResult.Item1.ToString();
             }
         }
