@@ -9,6 +9,9 @@ namespace MarketScreener.Test
 {
     internal class Test
     {
+        //Main jest teraz w EntryPoint, ewentualnie przełączać
+
+        /*
         static void Main(string[] args)
         {
 
@@ -31,14 +34,14 @@ namespace MarketScreener.Test
             //Console.WriteLine("QueryDatabase.Test():");
             //QueryDatabase.Test();
 
-            /*
-            Console.WriteLine("HAPxYahooFinance.Test():");
-            List<string> r = DataHunters.HAPxYahooFinance.HAPxYahooFinance.Test();
-            foreach(string s in r)
-            {
-                Console.WriteLine(s);
-            }
-            */
+            
+            //Console.WriteLine("HAPxYahooFinance.Test():");
+            //List<string> r = DataHunters.HAPxYahooFinance.HAPxYahooFinance.Test();
+            //foreach(string s in r)
+            //{
+            //    Console.WriteLine(s);
+            //}
+            
 
 
 
@@ -52,5 +55,7 @@ namespace MarketScreener.Test
             
             
         }
+        */
+        
     }
 }
