@@ -213,10 +213,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
 
-                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = '", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = '", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                         "' WHERE TickerYahoo = '", t, "'");
                     string insertSQL = String.Concat("INSERT INTO TICKER_HISTORY (", insertSQLColumns, " UpdateDate, SnapshotDate, TickerGoogleFinance) VALUES (",
-                        insertSQLValues, "'", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.Today.ToString("yyyy-MM-dd"), 
+                        insertSQLValues, "'", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), 
                         "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
 
                     int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);

@@ -15,12 +15,12 @@ namespace MarketScreener
         public static bool Entry(string text)
         {
             if (filePath == null)
-                filePath = String.Concat(GetPathMakeFolder(@"\Logs"), @"\", DateTime.Now.Date.ToShortDateString(), ".txt");
+                filePath = String.Concat(GetPathMakeFolder(@"\Logs"), @"\", DateTime.UtcNow.Date.ToShortDateString(), ".txt");
 
             FileStream fileStream = null;
             bool success = true;
 
-            text = String.Concat(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), " ", text, "\n");
+            text = String.Concat(DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), " ", text, "\n");
 
             try
             {

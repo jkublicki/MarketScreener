@@ -20,13 +20,13 @@ namespace MarketScreener
         static void Main(string[] args)
         {
             string line = "";
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
             
-            Console.WriteLine("MarketScreener will be running for " + maxRunTimeH.ToString() + " hours from " + startTime.ToString("yyyy-MM-dd HH:mm") + ", type STOP to break.");
+            Console.WriteLine("MarketScreener will be running for " + maxRunTimeH.ToString() + " hours from " + startTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.");
 
             SetTimer();
 
-            while (line != "STOP" || (DateTime.Now - startTime).Hours > maxRunTimeH)
+            while (line != "STOP" || (DateTime.UtcNow - startTime).Hours > maxRunTimeH)
             {
                 line = Console.ReadLine();
             }
@@ -48,8 +48,6 @@ namespace MarketScreener
         {
             if (HAPxYFManager.Status == HAPxYFManager.DataHunterStatus.OFF)
             {
-                //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " A KUKU!");
-
                 HAPxYFManager.Run();
                 
                 triggerTimer.Interval = (int)Math.Floor(timerIntervalMs * (decimal)(new Random().NextDouble() * 0.05 + 1)); //unikanie powtarzalności

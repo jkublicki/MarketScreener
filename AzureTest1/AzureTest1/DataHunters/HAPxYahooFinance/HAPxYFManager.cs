@@ -21,20 +21,28 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             ON
         }
 
-        private static List<string> GetYahooTickers()
+        private static List<string> GetYahooTickers(bool skipOpenMarkets)
         {
   
             List<string> tickers = new List<string>();
 
             //todo: uzupełnić słownik świąt, teraz są tylko weekendy
 
-            //niepuste tickery yahoo, brak lub niedzisiejsza data aktualizacji, brak święta dzisiaj dla tego rynku
-            string query = String.Concat("SELECT TOP ", BatchSize.ToString(),
-                " TickerYahoo FROM ENU_TICKER ET WHERE TickerYahoo IS NOT NULL ",
-                "AND (UpdateDate IS NULL OR CAST(UpdateDate AS date) < CAST(GETDATE() AS date)) ",
-                "AND NOT EXISTS (SELECT 1 FROM ENU_HOLIDAY EH WHERE EH.HolidayDate = CAST(GETDATE() AS date) ",
-                "AND EH.MarketCodeGoogleFinance = LEFT(ET.TickerGoogleFinance, CHARINDEX(':', ET.TickerGoogleFinance) - 1))"
-                );
+            string query = String.Concat("SELECT TOP ", BatchSize.ToString(), " TickerYahoo ",
+                "FROM ENU_TICKER ET JOIN ENU_MARKET EM ON ET.MarketCodeGoogleFinance = EM.MarketCodeGoogleFinance ",
+                "LEFT JOIN ENU_HOLIDAY EH ON EM.MarketCodeGoogleFinance = EH.MarketCodeGoogleFinance AND EH.HolidayDate = CAST(GETUTCDATE() AS date) ",
+                "WHERE ET.TickerYahoo IS NOT NULL AND (ET.UpdateDate IS NULL OR CAST(ET.UpdateDate AS date) < CAST(GETUTCDATE() AS date)) ",
+                "AND EH.HolidayDate IS NULL ");
+
+            if (skipOpenMarkets)
+            {
+                string utcNow = ((decimal)(DateTime.UtcNow.Hour + ((decimal)DateTime.UtcNow.Minute / (decimal)100.0))).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                query += String.Concat("AND EM.OpenHourUTC IS NOT NULL AND EM.CloseHourUTC IS NOT NULL ",
+                "AND (", utcNow, " < EM.OpenHourUTC OR ", utcNow, " > EM.CloseHourUTC) ",
+                "ORDER BY EM.MinComissionEUR ASC, ET.MarketCapMnUSD DESC");
+            }
+
+            //Console.WriteLine(query);
 
             int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
 
@@ -57,7 +65,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             
             Status = DataHunterStatus.ON;
 
-            List<string> tickers = GetYahooTickers();
+            List<string> tickers = GetYahooTickers(true);
 
             if (Log.Enabled)
                 Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));

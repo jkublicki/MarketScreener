@@ -14,7 +14,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             {
                 Website = "finance.yahoo.com",
                 WebsiteType = "Equity",
-                UpdateDate = DateTime.Now,
+                UpdateDate = DateTime.UtcNow,
                 Nodes = new List<WebsiteNodes.WebsiteNode>()
                 {
                     new WebsiteNodes.WebsiteNode()
