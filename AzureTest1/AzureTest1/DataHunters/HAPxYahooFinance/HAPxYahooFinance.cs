@@ -56,7 +56,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             const string urlBase = "https://finance.yahoo.com/quote/";
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
 
-            string result = "HAPxYahooFinance.Service() result:\n";
+            string result = "";
 
             var web = new HtmlAgilityPack.HtmlWeb();
 
@@ -233,7 +233,14 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 }
             }
 
-            return result;
+            if (result == "" && tickers.Count > 0)
+                result = "HAPxYahooFinance.Service() result: OK\n";
+            else if (result == "" && tickers.Count == 0)
+                result = "HAPxYahooFinance.Service() result: nothing to service\n";
+            else
+                result = String.Concat("HAPxYahooFinance.Service() result:\n", result);
+
+            return  result;
         }
 
 
