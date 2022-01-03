@@ -19,8 +19,16 @@ namespace MarketScreener
 {
     class QueryDatabase
     {
-        public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out DataTable dataTable)
+        const bool Enabled = true;
+
+        public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out DataTable? dataTable)
         {
+            if(!Enabled)
+            {
+                dataTable = null;
+                return 0;
+            }                
+
             dataTable = new DataTable();
             SqlConnection connection = new(connectionString);
             int rows = -1;
@@ -76,6 +84,12 @@ namespace MarketScreener
 
         public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out bool success)
         {
+            if (!Enabled)
+            {
+                success = true;
+                return 0;
+            }
+
             try
             {
                 SqlConnection connection = new(connectionString);
