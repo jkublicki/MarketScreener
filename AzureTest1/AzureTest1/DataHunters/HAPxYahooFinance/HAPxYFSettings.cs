@@ -147,7 +147,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
                         SearchElementLeft = "raw\":",
                         SearchElementBeforeLeft = "recommendationMean",
-                        LeftSEMaxDistance = 10,
+                        LeftSEMaxDistance = 25,
                         SearchElementRight = ",\"",
                         ColumnName = "RecommendationRating",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },

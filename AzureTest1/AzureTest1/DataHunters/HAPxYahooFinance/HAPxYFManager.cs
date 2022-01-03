@@ -67,8 +67,14 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             List<string> tickers = GetYahooTickers(true);
 
+                    //TEST-usunąć!!!
+                    /*
+                    tickers.Clear();
+                    tickers.Add("YNDX");
+                    */
+
             if (Log.Enabled)
-                Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));
+                Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));                
 
             string result = HAPxYahooFinance.Service(tickers, TickerSleepMs);
 

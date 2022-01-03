@@ -85,9 +85,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         continue; //pomiń ciąg dalszy tej iteracji
                     }
 
-                    //PRZYDATNE!!
-                    //zapis pobranego źródła strony, odkomentować do debuga
-                    //doc.Save("doc_" + t + ".txt");
+                    //debug
+                    if (Log.DebugEnabled)
+                        doc.Save("doc_" + t + ".txt");
 
                     yahooEquityNodeSet.Ticker = t;
 
@@ -144,9 +144,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     }
                                 }
 
-                                //PRZYDATNE!!
-                                //odkomentować do badania szczegółów - 1 z 2
-                                //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
+                                //debug
+                                if (Log.DebugEnabled)
+                                    result = String.Concat(result, t, ", ", n.Name, ": ", dataPoint, "\n");
 
                             }
                             catch (Exception)
@@ -164,18 +164,18 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             {
                                 int idxBeg = docText.IndexOf(n.SearchElementLeft, idxBeg0);
 
-                                if (idxBeg != -1)
+                                if (idxBeg != -1 && idxBeg - idxBeg0 < n.LeftSEMaxDistance) //nowa zmiana..
                                 {
                                     int idxEnd = docText.IndexOf(n.SearchElementRight, idxBeg + n.SearchElementLeft.Length);
 
-                                    if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance)
+                                    if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance) 
                                     {
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
                                         n.Value = dataPoint;
 
-                                        //PRZYDATNE!!
-                                        //odkomentować do badania szczegółów - 2 z 2
-                                        //result = result + t + ", " + n.Name + ": " + dataPoint + "\n";
+                                        //debug                                        
+                                        if (Log.DebugEnabled)
+                                            result = String.Concat(result, t, ", ", n.Name, ": ", dataPoint, "\n");
                                     }
                                     else
                                         success = false;                

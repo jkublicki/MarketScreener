@@ -23,14 +23,22 @@ namespace MarketScreener
             DateTime startTime = DateTime.UtcNow;
             
             Console.WriteLine("MarketScreener will be running for " + maxRunTimeH.ToString() + " hours from " + startTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.");
+            if (Log.DebugEnabled)
+                Console.WriteLine("Debug enabled");
+
+            if (Log.Enabled)
+                Log.Entry("Application start");
+
 
             SetTimer();
 
-            while (line != "STOP" || (DateTime.UtcNow - startTime).Hours > maxRunTimeH)
+            while (line != "STOP" || (DateTime.UtcNow - startTime).Hours >= maxRunTimeH)
             {
                 line = Console.ReadLine();
             }
 
+            if (Log.Enabled)
+                Log.Entry("Application stop");
 
         }
 
@@ -54,7 +62,7 @@ namespace MarketScreener
             }
                 
             else if (Log.Enabled)
-                Log.Entry("Timer tick ignored, previous data hunter till run has not finished.");
+                Log.Entry("Timer tick ignored, previous data hunter run has not finished.");
                 
         }
     }
