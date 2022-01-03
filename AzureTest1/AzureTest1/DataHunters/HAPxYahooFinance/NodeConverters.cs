@@ -17,12 +17,12 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
         public enum ConvertingFunctions
         {
-            None,
             EvalDecimal,
             EvalInt,
             DecimalRangeLeft,
             DecimalRangeRight,
-            Varchar,
+            Varchar50,
+            EvalDate,
             YFMarketCapToMillion,
             GICSSector
         }
@@ -32,9 +32,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         {
             switch (converter)
             {
-                case ConvertingFunctions.None:
-                    success = true;
-                    return value;
                 case ConvertingFunctions.EvalDecimal:
                     string v1 = EvalDecimal(value, out bool s1);
                     success = s1;
@@ -59,20 +56,59 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     string v6 = GICSSector(value, out bool s6);
                     success = s6;
                     return v6;
-                case ConvertingFunctions.Varchar:
-                    success = true;
-                    return String.Concat("'", value, "'");
+                case ConvertingFunctions.EvalDate:
+                    string v7 = EvalDate(value, out bool s7);
+                    success = s7;
+                    return v7;
+                case ConvertingFunctions.Varchar50:
+                    string v8 = Varchar50(value, out bool s8);
+                    success = s8;
+                    return v8;
 
                 default:
                     success = false;
                     return "NodeConverters.ConvertValue() failed";
 
             }
-
         }
 
+        private static string Varchar50(string dataPoint, out bool success)
+        {
+            if (dataPoint == null || dataPoint == "")
+            {
+                success = true;
+                return "NULL";
+            }
 
-        public static string GICSSector(string dataPoint, out bool success)
+            success = true;
+            return String.Concat("'", dataPoint, "'"); //uwaga, DODAĆ przycięcie
+        }
+                
+        private static string EvalDate(string dataPoint, out bool success)
+        {
+            if (dataPoint == null || dataPoint == "")
+            {
+                success = true;
+                return "NULL";
+            }
+
+            DateTime result;
+
+            try
+            {
+                result = DateTime.Parse(dataPoint, CultureInfo.InvariantCulture);
+            }
+            catch (Exception)
+            {
+                success = false;
+                return "NULL";
+            }
+
+            success = true;
+            return result.Date.ToString("yyyy-MM-dd");
+        }
+
+        private static string GICSSector(string dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -94,8 +130,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 return gicsResult.Item1.ToString();
             }
         }
-
-
 
         private static string YFMarketCapToMillion(string dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
         {
@@ -134,7 +168,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             string s = dataPoint.Trim();
 
             success = Int32.TryParse(s, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out int result);
-
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
@@ -178,8 +211,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            success = Decimal.TryParse(s.Split(' ').First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-
+            success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
@@ -200,8 +232,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            success = Decimal.TryParse(s.Split(' ').Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-
+            success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
     }

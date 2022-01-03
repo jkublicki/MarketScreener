@@ -9,7 +9,7 @@ namespace MarketScreener
     public static class Log
     {
         public const bool Enabled = true; //używać PRZED skręceniem stringa do zalogowania
-        public const bool DebugEnabled = false;
+        public const bool DebugEnabled = true;
 
         static string? filePath = null;
 

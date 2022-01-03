@@ -41,7 +41,7 @@ namespace MarketScreener.Test
                 success = false;
             }
 
-
+    
             return report;
         }
     }

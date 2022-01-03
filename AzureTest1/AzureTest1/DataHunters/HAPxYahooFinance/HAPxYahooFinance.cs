@@ -11,37 +11,30 @@ using System.Diagnostics;
 /*
  * todo:
  * 
- * //błąd: przypadek ATD.WA - nie ma recommendation rating, znajduje BeforeLeft i za nim Left, ale to nie ten co trzeba
- * //dorobić przeszukiwanie a la pierwszy Service() - przeszukanie html-a
- * //1. dorobić strukturę bazy 
- * //...i zapis do bazy
- * //- co z konwersją, np. 52w range?
- * //- potem uporządkować klasy node i nodeSet
- * 2. dorobić timer i powolne, odpowiedzialne działanie
- * 3. dorabiać kolejne node-y dla strony yahoo finance i rozwiązywać na bieżąco problemy z uzyskaniem node-a wg. XPATH i wartości z node-a
- * 4. dorobić log
+ * BUGI
+ * - Po dodaniu w settings node-ów Currency i CompanyName leci paskudny null, nie mogę znaleźć przyczyny
+ * -- Okazało się, że próba pobrania atrybutu value z node-a, któy go nie ma, skutkuje wyjątkiem, którego try catch nie łapie
+ * -- Dodałem obsługę wyjątków, teraz jest nowy błąd (może niezwiązany ze zmianami) - program chyba się gdzieś blokuje permanentnie w dziwnym stanie
+ * --- Widać w konsoli debug gdzie
+ * --- Ze względu na inny błąd (błąd linq) musiałem wyłaczyć przycinanie w konwerterze Varchar50, co potem spowoduje problem z zapisem do bazy
  * 
  * 
- * teraz: https://html-agility-pack.net/select-nodes
- * - bo se nie mają przyszłości i zaczęły powodować problemy
+ * - Drobny: po północy loguje nadal do pliku z poprzedniego dnia
  * 
- * concaty
- * opanować Debug.WriteLine https://stackoverflow.com/questions/9466838/writing-to-output-window-of-visual-studio
- * opanować debugowanie (breakpoint, watch), coś jest nie tak
- * sprawdzić wyłuskiwanie danych ze strony yahoo finance
- * dodać zapis do bazy
- * dodać generalnie obsługę wielu punktów danych, w tym celu ich search elements itp.
- * na teraz zrobić to w jednej długiej funkcji
- * zweryfikowac ze zawsze search elements działają np. yahoo z tym nie walczy różnymi wersjami strony
- * zweryfikować że program się wyrabia i nie zakleszcza
- * potem pomyśleć o bardziej inteligentnej obsłudze
+ * KOD
+ * - Chyba drastycznie nadużyłem static, kod nie nadaje się do pokazania nikomu
  * 
- * korzystając z DocumentNode.SelectNodes w chrome pobierać full XPATH
+ * TODO
+ *  
+ * - Brakujące elementy strony: kraj, nazwa firmy, waluta, czy pobrano dane po czy przed zamknięciem, ilość analiz
+ * -- Po zakończeniu przywrócić normalne działanie z obecnych ustawień debugowych:
+ * --- usunąć nadpisanie tickers w managerze, wyłączyć skip data extraction w service, wyłączyć debug enabled w log
+
+ * - Sprawdzenie poprawności danych zapisanych do bazy, wyszukiwanie przekłamań
+ * -- skrypt Przydasie
+ * -- porównanie z API google finance (select z bazy wkleić do google spreadsheet-a z googlefinance())
  * 
- * aby uniknąć bana od yahoo crawling powinien być podzielony na kawałki (mniejsze niż 1000)
- * timer https://docs.microsoft.com/en-us/dotnet/api/system.timers.timer?view=net-6.0
  * 
- * rozróżnić listę node-ów do zbadania i listę danych do insertowania
  * 
  */
 
@@ -66,6 +59,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         public static string Service(List<string> tickers, int tickerSleepMs)
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
+            const bool skipDataExtraction = true;
+
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
 
             string result = "";
@@ -135,38 +130,75 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                                 if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
                                 {
+                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 1");
+
+
                                     try
                                     {
-                                        dataPoint = node.Attributes["value"].Value;
-                                        n.Value = dataPoint;
+                                        if (node.HasAttributes && node.Attributes["value"] != null)
+                                        {
+                                            dataPoint = node.Attributes["value"].Value; //tu potrafi polecieć exception pomimo try https://stackoverflow.com/questions/30498612/try-catch-doesnt-catch-exception
+                                            n.Value = dataPoint;
+
+                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 2");
+                                        }
+                                        else
+                                            result = String.Concat(result, "   Value acquisition (AttributeValue) failed - the node doesn't have a such attribute - for ", t, ", ", n.Name, "\n");
+
+                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 3");
                                     }
                                     catch (Exception)
                                     {
-                                        result = String.Concat(result, "   Value acquisition (AttributeValue) failed for ", t, ", ", n.Name, "\n");
+                                        result = String.Concat(result, "   Value acquisition (AttributeValue) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
                                 {
+                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 1");
+
                                     try
                                     {
-                                        dataPoint = node.InnerText;
-                                        n.Value = dataPoint;
+                                        if (node.InnerText != null)
+                                        {
+                                            dataPoint = node.InnerText;
+                                            n.Value = dataPoint;
+
+                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 2");
+
+                                        }
+                                        else
+                                            result = String.Concat(result, "   Value acquisition (InnerText) failed - InnerText is null - for ", t, ", ", n.Name, "\n");
+
+                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 3");
                                     }
                                     catch (Exception)
                                     {
-                                        result = String.Concat(result, "   Value acquisition (InnerText) failed for ", t, ", ", n.Name, "\n");
+                                        result = String.Concat(result, "   Value acquisition (InnerText) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
                                 {
+                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 1");
+
                                     try
                                     {
-                                        dataPoint = node.InnerHtml;
-                                        n.Value = dataPoint;
+                                        if (node.InnerHtml != null)
+                                        {
+                                            dataPoint = node.InnerHtml;
+                                            n.Value = dataPoint;
+
+                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 2");
+
+                                        }
+                                        else
+                                            result = String.Concat(result, "   Value acquisition (InnerHtml) failed - InnerHtml is null - for ", t, ", ", n.Name, "\n");
+
+                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 3");
+
                                     }
                                     catch (Exception)
                                     {
-                                        result = String.Concat(result, "   Value acquisition (InnerHtml) failed for ", t, ", ", n.Name, "\n");
+                                        result = String.Concat(result, "   Value acquisition (InnerHtml) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
                                 }
 
@@ -218,11 +250,16 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             }                            
                         }
 
+                        
                         string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, out bool su);
                         if (su)
+                        {
                             n.Value = s;
+                            if (Log.DebugEnabled)
+                                result = String.Concat(result, "    ", t, ", ", n.Name, ", converted value: ", n.Value, "\n");
+                        }
                         else
-                        {                            
+                        {
                             result = String.Concat(result, "   Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
                             n.Value = "NULL";
                         }
@@ -245,13 +282,18 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         insertSQLValues, "'", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), 
                         "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
 
-                    int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
-                    if (updatedRows == -1)
-                        result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
-                    
-                    int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
-                    if (insertedRows == -1)
-                        result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
+                    if (!skipDataExtraction)
+                    {
+                        int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
+                        if (updatedRows == -1)
+                            result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
+
+                        int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
+                        if (insertedRows == -1)
+                            result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
+
+                    }
+
 
                     decimal rand = (decimal)(new Random().NextDouble() * 0.2 + 1); //zgodnie z praktykami (nie za szybko, losowo) https://www.scrapehero.com/how-to-prevent-getting-blacklisted-while-scraping/
                     int sleep = (int)Math.Floor(tickerSleepMs * rand);                    

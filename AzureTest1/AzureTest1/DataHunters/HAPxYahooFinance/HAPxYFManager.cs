@@ -37,12 +37,14 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             if (skipOpenMarkets)
             {
                 string utcNow = ((decimal)(DateTime.UtcNow.Hour + ((decimal)DateTime.UtcNow.Minute / (decimal)100.0))).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                query += String.Concat("AND EM.OpenHourUTC IS NOT NULL AND EM.CloseHourUTC IS NOT NULL ",
+                query = String.Concat(query, "AND EM.OpenHourUTC IS NOT NULL AND EM.CloseHourUTC IS NOT NULL ",
                 "AND (", utcNow, " < EM.OpenHourUTC OR ", utcNow, " > EM.CloseHourUTC) ",
                 "ORDER BY EM.MinComissionEUR ASC, ET.MarketCapMnUSD DESC");
             }
-
-            //Console.WriteLine(query);
+            else
+            {
+                query = String.Concat(query, "ORDER BY EM.MinComissionEUR ASC, ET.MarketCapMnUSD DESC");
+            }
 
             int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
 
@@ -65,18 +67,20 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             
             Status = DataHunterStatus.ON;
 
-            List<string> tickers = GetYahooTickers(true);
+            List<string> tickers = GetYahooTickers(false); //powinno być ignore open markets = true
 
                     //TEST-usunąć!!!
-                    /*
+                    
                     tickers.Clear();
-                    tickers.Add("YNDX");
-                    */
+                    tickers.Add("QURE");
+                    
 
             if (Log.Enabled)
                 Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));                
 
             string result = HAPxYahooFinance.Service(tickers, TickerSleepMs);
+
+            Console.WriteLine("KURWA MAĆ " + result);  
 
             if (Log.Enabled)
                 Log.Entry(result[..^1]);
