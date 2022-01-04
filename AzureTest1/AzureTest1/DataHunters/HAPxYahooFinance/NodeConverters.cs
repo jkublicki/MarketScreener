@@ -28,7 +28,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
 
 
-        public static string ConvertValue(string value, ConvertingFunctions converter, out bool success)
+        public static string ConvertValue(string? value, ConvertingFunctions converter, out bool success)
         {
             switch (converter)
             {
@@ -72,7 +72,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
         }
 
-        private static string Varchar50(string dataPoint, out bool success)
+        private static string Varchar50(string? dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -84,7 +84,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return String.Concat("'", dataPoint, "'"); //uwaga, DODAC przycięcie
         }
                 
-        private static string EvalDate(string dataPoint, out bool success)
+        private static string EvalDate(string? dataPoint, out bool success)
         {
             //przypadek N/A, para dat, inna para
 
@@ -113,7 +113,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result.Date.ToString("yyyy-MM-dd");
         }
 
-        private static string GICSSector(string dataPoint, out bool success)
+        private static string GICSSector(string? dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -136,7 +136,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
         }
 
-        private static string YFMarketCapToMillion(string dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
+        private static string YFMarketCapToMillion(string? dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -162,7 +162,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string EvalInt(string dataPoint, out bool success)
+        private static string EvalInt(string? dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -176,7 +176,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string EvalDecimal(string dataPoint, out bool success)
+        private static string EvalDecimal(string? dataPoint, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -199,7 +199,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
 
         
-        private static string DecimalRangeLeft(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeLeft(string? dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -241,7 +241,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return "NULL";
         }
 
-        private static string DecimalRangeRight(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeRight(string? dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {

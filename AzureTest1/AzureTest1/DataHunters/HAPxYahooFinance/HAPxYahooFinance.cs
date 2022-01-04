@@ -12,8 +12,6 @@ using System.Diagnostics;
  * todo:
  * 
  * BUGI
- * - teraz jakieś paskudztwo dla node ExDividendDate, kiedy na stronie jest N/A, HAP wybucha blisko poczatku petli dla node
- * 
  * - Drobny: po północy loguje nadal do pliku z poprzedniego dnia
  * 
  * KOD
@@ -44,31 +42,31 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return true;
         }
 
-        private static void ServiceDeadUrl(string ticker, ref string result)
+        private static void ServiceDeadUrl(string ticker)
         {
             if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, String.Concat(
-                        "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", ticker, "'"), false, out bool _) == -1)
-                result = String.Concat(result, "    HAPxYahooFinance.Service() is stuck! Can't service and can't update ", ticker);
+                "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", ticker, "'"), false, out bool _) == -1)
+                Log.Entry(String.Concat("HAPxYahooFinance.Service() is stuck! Can't service and can't update ", ticker));
         }
 
-        public static string Service(List<string> tickers, int tickerSleepMs)
+        public static void Service(List<string> tickers, int tickerSleepMs)
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
             const bool skipDataExtraction = true;
-
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
 
-            string result = "";
+            int failCount = 0;
 
             HtmlAgilityPack.HtmlWeb web = new();
             web.PreRequest = OnPreRequest;
 
-            
+            if (Log.Enabled) Log.Entry("HAPxYahooFinance service result:");
 
             if (web == null)
             {
-                result = String.Concat(result, "   HtmlAgilityPack.HtmlWeb() failed\n");
-                return result;
+                if (Log.Enabled) Log.Entry("   HtmlAgilityPack.HtmlWeb() failed");
+                failCount++;
+                return;
             }
 
             if (tickers.Count > 0)
@@ -79,28 +77,24 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                     HtmlAgilityPack.HtmlDocument? doc;
 
-                    bool loadException = false;
-
                     try
                     {                        
                         doc = web.Load(url);                        
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e.ToString());
-                        ////
-
-                        result = String.Concat(result, "   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url, 
-                            ". Full exception: ", e, "\n");
-                        loadException = true;
-                        ServiceDeadUrl(t, ref result);
+                        if (Log.Enabled) Log.Entry(String.Concat("   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,
+                            ". Full exception: ", e.ToString(), ""));
+                        failCount++;
+                        ServiceDeadUrl(t);
                         continue;
                     }
                      
                     if (doc == null || doc.Text == null || doc.Text.Length < 100)
-                    {
-                        result = String.Concat(result, "   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() returned empty document from url ", url, "\n");
-                        ServiceDeadUrl(t, ref result);
+                    {   
+                        if (Log.Enabled) Log.Entry(String.Concat("   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() returned empty document from url ", url, ""));
+                        failCount++;
+                        ServiceDeadUrl(t);
                         continue;
                     }
 
@@ -123,42 +117,34 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         {                            
                             try
                             {
-                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First(); //tu pobranie first z pustej kolekcji? <<<
-                                
+                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectSingleNode(n.FullXPATH);
+
                                 string? dataPoint = null; 
 
-                                if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
+                                if (node != null && n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
                                 {
-                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 1");
-
-
                                     try
                                     {
-                                        if (node.HasAttributes && node.Attributes["value"] != null) //tu może być node == null <<<<<<
+                                        if (node.HasAttributes && node.Attributes["value"] != null) 
                                         {
                                             dataPoint = node.Attributes["value"].Value; //tu potrafi polecieć exception pomimo try https://stackoverflow.com/questions/30498612/try-catch-doesnt-catch-exception
                                             n.Value = dataPoint;
-
-                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 2");
                                         }
                                         else
-                                            result = String.Concat(result, "   Value acquisition (AttributeValue) failed - the node doesn't have a such attribute - for ", t, ", ", n.Name, "\n");
-
-                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 3");
+                                        {
+                                            if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (AttributeValue) failed - the node doesn't have a such attribute - for ", t, ", ", n.Name, ""));
+                                            failCount++;
+                                        }
                                     }
                                     catch (Exception e)
-                                    {
-                                        Debug.WriteLine(e.ToString());
-                                        //
-
-                                        result = String.Concat(result, "   Value acquisition (AttributeValue) failed - exception - for ", t, ", ", n.Name, "\n");
-
+                                    {   
+                                        if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (AttributeValue) failed - exception - for ", t, ", ", n.Name, ""));
+                                        if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
+                                        failCount++;
                                     }
                                 }
-                                else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
+                                else if (node != null && n.DataLocation == WebsiteNodes.DataLocations.InnerText)
                                 {
-                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 1");
-
                                     try
                                     {
                                         if (node.InnerText != null)
@@ -166,62 +152,52 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                             dataPoint = node.InnerText;
                                             n.Value = dataPoint;
 
-                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 2");
-
                                         }
                                         else
-                                            result = String.Concat(result, "   Value acquisition (InnerText) failed - InnerText is null - for ", t, ", ", n.Name, "\n");
-
-                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 3");
+                                        {
+                                            if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerText) failed - InnerText is null - for ", t, ", ", n.Name, ""));
+                                            failCount++;
+                                        }
                                     }
                                     catch (Exception e)
                                     {
-                                        Debug.WriteLine(e.ToString());
-                                        //
-
-                                        result = String.Concat(result, "   Value acquisition (InnerText) failed - exception - for ", t, ", ", n.Name, "\n");
+                                        if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerText) failed - exception - for ", t, ", ", n.Name, ""));
+                                        if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
+                                        failCount++;
                                     }
                                 }
-                                else if (n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
+                                else if (node != null && n.DataLocation == WebsiteNodes.DataLocations.InnerHtml)
                                 {
-                                    Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 1");
-
                                     try
                                     {
                                         if (node.InnerHtml != null)
                                         {
                                             dataPoint = node.InnerHtml;
                                             n.Value = dataPoint;
-
-                                            Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 2");
-
                                         }
                                         else
-                                            result = String.Concat(result, "   Value acquisition (InnerHtml) failed - InnerHtml is null - for ", t, ", ", n.Name, "\n");
-
-                                        Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 3");
-
+                                        {
+                                            if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerHtml) failed - InnerHtml is null - for ", t, ", ", n.Name, ""));
+                                            failCount++;
+                                        }   
                                     }
                                     catch (Exception e)
                                     {
-                                        Debug.WriteLine(e.ToString());
-                                        //
-
-                                        result = String.Concat(result, "   Value acquisition (InnerHtml) failed - exception - for ", t, ", ", n.Name, "\n");
+                                        if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerHtml) failed - exception - for ", t, ", ", n.Name, ""));
+                                        if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
+                                        failCount++;
                                     }
                                 }
 
                                 //debug
-                                if (Log.DebugEnabled)
-                                    result = String.Concat(result, "   ", t, ", ", n.Name, ": ", dataPoint, "\n");
+                                if (Log.Enabled && Log.DebugEnabled) Log.Entry(String.Concat("  ", t, ", ", n.Name, ": ", dataPoint, ""));
 
                             }
                             catch (Exception e)
                             {
-                                Debug.WriteLine(e.ToString());
-                                //
-
-                                result = String.Concat(result, "   XPATH select failed for ", t, ", node ", n.Name, "\n");
+                                if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed for ", t, ", node ", n.Name, ""));
+                                if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
+                                failCount++;
                             }
                         }
                         else if (n.ServiceMode == WebsiteNodes.ServiceModes.DOCTEXT)
@@ -243,9 +219,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                         string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
                                         n.Value = dataPoint;
 
-                                        //debug                                        
-                                        if (Log.DebugEnabled)
-                                            result = String.Concat(result, "   ", t, ", ", n.Name, ": ", dataPoint, "\n");
+                                        if (Log.Enabled && Log.DebugEnabled) Log.Entry(String.Concat("  ", t, ", ", n.Name, ": ", dataPoint, ""));
                                     }
                                     else
                                         success = false;                
@@ -258,7 +232,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                             if (!success)
                             {
-                                result = String.Concat(result, "   Text search failed for ", t, ", node ", n.Name, "\n");
+                                if (Log.Enabled) Log.Entry(String.Concat("   Text search failed for ", t, ", node ", n.Name, ""));
+                                failCount++;
                             }                            
                         }
 
@@ -267,12 +242,12 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         if (su)
                         {
                             n.Value = s;
-                            if (Log.DebugEnabled)
-                                result = String.Concat(result, "    ", t, ", ", n.Name, ", converted value: ", n.Value, "\n");
+                            if (Log.DebugEnabled && Log.Enabled) Log.Entry(String.Concat("  ", t, ", ", n.Name, ", converted value: ", n.Value, ""));
                         }
                         else
                         {
-                            result = String.Concat(result, "   Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, "\n");
+                            if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, ""));
+                            failCount++;
                             n.Value = "NULL";
                         }
 
@@ -298,14 +273,18 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     {
                         int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                         if (updatedRows == -1)
-                            result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, "\n");
+                        {
+                            if (Log.Enabled) Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, ""));
+                            failCount++;
+                        }   
 
                         int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
                         if (insertedRows == -1)
-                            result = String.Concat(result, "   QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "\n"); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
-
+                        {
+                            if (Log.Enabled) Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "")); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
+                            failCount++;
+                        }
                     }
-
 
                     decimal rand = (decimal)(new Random().NextDouble() * 0.2 + 1); //zgodnie z praktykami (nie za szybko, losowo) https://www.scrapehero.com/how-to-prevent-getting-blacklisted-while-scraping/
                     int sleep = (int)Math.Floor(tickerSleepMs * rand);                    
@@ -313,14 +292,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 }
             }
 
-            if (result == "" && tickers.Count > 0)
-                result = "HAPxYahooFinance.Service() result: OK\n";
-            else if (result == "" && tickers.Count == 0)
-                result = "HAPxYahooFinance.Service() result: nothing to service\n";
-            else
-                result = String.Concat("HAPxYahooFinance.Service() result:\n", result);
-
-            return  result;
+            if (failCount == 0 && tickers.Count > 0 && Log.Enabled) 
+                Log.Entry("Complete without issues");
+            else if (failCount == 0 && tickers.Count == 0 && Log.Enabled) 
+                Log.Entry("Nothing to service");
+            else if (Log.Enabled) Log.Entry(String.Concat("Complete with issues listed above"));
         }
 
 

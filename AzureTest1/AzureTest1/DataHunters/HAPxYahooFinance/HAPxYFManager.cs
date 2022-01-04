@@ -46,14 +46,14 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 query = String.Concat(query, "ORDER BY EM.MinComissionEUR ASC, ET.MarketCapMnUSD DESC");
             }
 
-            int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dataTable);
+            int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable? dataTable);
 
-            if (rows > 0)
+            if (rows > 0 && dataTable != null)
             {
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    if (row != null && !row.IsNull(0))
-                        tickers.Add(row.ItemArray[0].ToString());
+                    if (!row.IsNull(0) && row.ItemArray.Length > 0 && row.ItemArray[0] != null)
+                        tickers.Add(row.ItemArray[0].ToString()); //warning VS bez sensu
                 }
             }
 
@@ -78,12 +78,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             if (Log.Enabled)
                 Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));                
 
-            string result = HAPxYahooFinance.Service(tickers, TickerSleepMs);
-
-            Console.WriteLine("KURWA MAĆ " + result);  
-
-            if (Log.Enabled)
-                Log.Entry(result[..^1]);
+            HAPxYahooFinance.Service(tickers, TickerSleepMs);
 
             Status = DataHunterStatus.OFF;
 

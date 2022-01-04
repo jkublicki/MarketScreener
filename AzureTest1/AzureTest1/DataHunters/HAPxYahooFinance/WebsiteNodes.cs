@@ -27,7 +27,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             public string Website;
             public string Ticker;
             public string Name;
-            public ServiceModes ServiceMode; //określa metodę szukania danych: XPATH, DOCTEXT
+            public ServiceModes? ServiceMode; //określa metodę szukania danych: XPATH, DOCTEXT
             public string FullXPATH;
             public DataLocations DataLocation; //określa położenie danych w node, tylko dla XPATH: AttributeValue, InnerText, InnerHtml            
             public string SearchElementBeforeLeft; //jn. poprzedzający SearchElementLeft
@@ -38,7 +38,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             public NodeConverters.ConvertingFunctions ConverterFunction;
             public string ColumnName;
             public List<string> Tables; //zakładając, że update wielu tabel, ale tabele mają tak samo nazwane kolumny odpowiadające temu punktowi danych
-            public DateTime UpdateDate;
+            //public DateTime UpdateDate;
         }
 
         internal class WebsiteNodeSet

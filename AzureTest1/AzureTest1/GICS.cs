@@ -16,7 +16,6 @@ namespace MarketScreener
             public string Name;
             public string OtherName1;
             public int ID;
-            public int Parent;
         }
 
         private static List<GICSItem> enuGICS; 
@@ -58,47 +57,57 @@ namespace MarketScreener
         {
             enuGICS = new List<GICSItem>();
             string query = "SELECT ID, Name, OtherName1 FROM ENU_GICS";
-            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable dt) == -1)
+            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable? dt) == -1)
             {
                 Debug.WriteLine("Failed to execute SQL statement: " + query);
             }
-
-            foreach (DataRow row in dt.Rows)
+               
+            using (dt)
             {
-                if (row != null && !row.IsNull(0))
+                if (dt != null)
                 {
-                    GICSItem item = new GICSItem();
-                    item.ID = Convert.ToInt32(row["ID"]);
-                    if (!row.IsNull("Name"))
-                        item.Name = row["Name"].ToString();
-                    else
-                        item.Name = "";
-                    if (!row.IsNull("OtherName1"))
-                        item.OtherName1 = row["OtherName1"].ToString();
-                    else
-                        item.OtherName1 = "";
-                    int len = item.ID.ToString().Length;
-                    switch (len)
+                    foreach (DataRow row in dt.Rows)
                     {
-                        case 2: //Sektory mają dwuznakowe kody
-                            item.Category = "Sector";
-                            break;
-                        case 4:
-                            item.Category = "Industry Group";
-                            break;
-                        case 6:
-                            item.Category = "Industry";
-                            break;
-                        case 8:
-                            item.Category = "Sub-Industry";
-                            break;
-                        default:
-                            item.Category = "";
-                            break;
+                        if (!row.IsNull(0))
+                        {
+                            GICSItem item = new GICSItem();
+                            item.ID = Convert.ToInt32(row["ID"]);
+                            if (!row.IsNull("Name"))
+                                item.Name = row["Name"].ToString();
+                            else
+                                item.Name = "";
+                            if (!row.IsNull("OtherName1"))
+                                item.OtherName1 = row["OtherName1"].ToString();
+                            else
+                                item.OtherName1 = "";
+                            int len = item.ID.ToString().Length;
+                            switch (len)
+                            {
+                                case 2: //Sektory mają dwuznakowe kody
+                                    item.Category = "Sector";
+                                    break;
+                                case 4:
+                                    item.Category = "Industry Group";
+                                    break;
+                                case 6:
+                                    item.Category = "Industry";
+                                    break;
+                                case 8:
+                                    item.Category = "Sub-Industry";
+                                    break;
+                                default:
+                                    item.Category = "";
+                                    break;
+                            }
+                            enuGICS.Add(item);
+                        }
                     }
-                    enuGICS.Add(item);
                 }
             }
+
+            
+
+            
         }
 
 
