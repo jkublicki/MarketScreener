@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Data;
+using System.Diagnostics;
 
 
 
@@ -49,6 +50,8 @@ namespace MarketScreener
                 }
                 catch (SqlException e)
                 {
+                    Debug.WriteLine(e.ToString());
+
                     if (Log.Enabled)
                         Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed with message: ", e.Message, ". Full exception: ", e.ToString()));
 
@@ -90,6 +93,8 @@ namespace MarketScreener
             }
             catch (SqlException e)
             {
+                Debug.WriteLine(e.ToString());
+
                 success = false;
 
                 if (Log.Enabled)

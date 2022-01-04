@@ -81,11 +81,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
 
             success = true;
-            return String.Concat("'", dataPoint, "'"); //uwaga, DODAĆ przycięcie
+            return String.Concat("'", dataPoint, "'"); //uwaga, DODAC przycięcie
         }
                 
         private static string EvalDate(string dataPoint, out bool success)
         {
+            //przypadek N/A, para dat, inna para
+
             if (dataPoint == null || dataPoint == "")
             {
                 success = true;
@@ -98,8 +100,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             {
                 result = DateTime.Parse(dataPoint, CultureInfo.InvariantCulture);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine(e.ToString());
+                //throw e; //DateTime.Parse nie umie inaczej niz wyjatkie powiedziec, ze nie udalo sie parsowanie
+
                 success = false;
                 return "NULL";
             }
@@ -202,6 +207,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 return "NULL";
             }
 
+            Debug.WriteLine("DecimalRangeLeft (" + dataPoint);
+
             string s = "";
             foreach (char c in dataPoint)
             {
@@ -211,8 +218,27 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-            return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+
+            //tu jest sraka, ujawniła się po dodaniu remove empty entries
+            //data point jest 'N/A (N/A)'
+            //s jest '           '
+            //kolekcja s.Split nie ma elementów //sprawdzanie: List.Any() jest true, jeżeli są jakieś elementy
+            //tryparse dostaje jako parametr odwołanie do nieistniejącego elementu
+            //dodatkowo przed zwróceniem result nie jest sprawdzany success
+            //nie spałeś => nie koduj
+            //poprawki nanieść w pozostałych podobnych funkcjach
+
+            if (s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any())
+            {
+                success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
+                if (success)
+                {
+                    return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+                }
+            }
+            
+            success = false;
+            return "NULL";
         }
 
         private static string DecimalRangeRight(string dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
@@ -232,8 +258,17 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     s += ' ';
             }
 
-            success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
-            return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+            if (s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any())
+            {
+                success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
+                if (success)
+                {
+                    return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+                }
+            }
+            
+            success = false;
+            return "NULL";
         }
     }
 }

@@ -12,12 +12,7 @@ using System.Diagnostics;
  * todo:
  * 
  * BUGI
- * - Po dodaniu w settings node-ów Currency i CompanyName leci paskudny null, nie mogę znaleźć przyczyny
- * -- Okazało się, że próba pobrania atrybutu value z node-a, któy go nie ma, skutkuje wyjątkiem, którego try catch nie łapie
- * -- Dodałem obsługę wyjątków, teraz jest nowy błąd (może niezwiązany ze zmianami) - program chyba się gdzieś blokuje permanentnie w dziwnym stanie
- * --- Widać w konsoli debug gdzie
- * --- Ze względu na inny błąd (błąd linq) musiałem wyłaczyć przycinanie w konwerterze Varchar50, co potem spowoduje problem z zapisem do bazy
- * 
+ * - teraz jakieś paskudztwo dla node ExDividendDate, kiedy na stronie jest N/A, HAP wybucha blisko poczatku petli dla node
  * 
  * - Drobny: po północy loguje nadal do pliku z poprzedniego dnia
  * 
@@ -90,10 +85,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     {                        
                         doc = web.Load(url);                        
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
+                        Debug.WriteLine(e.ToString());
+                        throw e;
+
                         result = String.Concat(result, "   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url, 
-                            ". Full exception: ", ex, "\n");
+                            ". Full exception: ", e, "\n");
                         loadException = true;
                         ServiceDeadUrl(t, ref result);
                         continue;
@@ -125,7 +123,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         {                            
                             try
                             {
-                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First();
+                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First(); //tu pobranie first z pustej kolekcji?
                                 string? dataPoint = null; 
 
                                 if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
@@ -147,9 +145,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                                         Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.AttributeValue 3");
                                     }
-                                    catch (Exception)
+                                    catch (Exception e)
                                     {
+                                        Debug.WriteLine(e.ToString());
+                                        throw e;
+
                                         result = String.Concat(result, "   Value acquisition (AttributeValue) failed - exception - for ", t, ", ", n.Name, "\n");
+
                                     }
                                 }
                                 else if (n.DataLocation == WebsiteNodes.DataLocations.InnerText)
@@ -171,8 +173,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                                         Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerText 3");
                                     }
-                                    catch (Exception)
+                                    catch (Exception e)
                                     {
+                                        Debug.WriteLine(e.ToString());
+                                        throw e;
+
                                         result = String.Concat(result, "   Value acquisition (InnerText) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
                                 }
@@ -196,8 +201,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                         Debug.WriteLine(n.Name + " wewnątrz n.DataLocation == WebsiteNodes.DataLocations.InnerHtml 3");
 
                                     }
-                                    catch (Exception)
+                                    catch (Exception e)
                                     {
+                                        Debug.WriteLine(e.ToString());
+                                        throw e;
+
                                         result = String.Concat(result, "   Value acquisition (InnerHtml) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
                                 }
@@ -207,8 +215,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     result = String.Concat(result, "   ", t, ", ", n.Name, ": ", dataPoint, "\n");
 
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
+                                Debug.WriteLine(e.ToString());
+                                throw e;
+
                                 result = String.Concat(result, "   XPATH select failed for ", t, ", node ", n.Name, "\n");
                             }
                         }

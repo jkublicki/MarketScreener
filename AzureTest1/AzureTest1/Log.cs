@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MarketScreener
 {
@@ -33,6 +34,9 @@ namespace MarketScreener
             }
             catch (Exception e)
             {
+                Debug.WriteLine(e.ToString());
+                throw e;
+
                 success = false;
             }
             finally
