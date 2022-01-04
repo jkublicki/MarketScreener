@@ -103,7 +103,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                //throw e; //DateTime.Parse nie umie inaczej niz wyjatkie powiedziec, ze nie udalo sie parsowanie
+                //// //DateTime.Parse nie umie inaczej niz wyjatkie powiedziec, ze nie udalo sie parsowanie
 
                 success = false;
                 return "NULL";

@@ -35,7 +35,7 @@ namespace MarketScreener
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
-                throw e;
+                //
 
                 success = false;
             }

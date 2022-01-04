@@ -9,7 +9,12 @@ namespace MarketScreener.Test
 {
     internal class Test
     {
+
+        
+        
         //Main jest teraz w EntryPoint, ewentualnie przełączać
+
+
 
         /*
         static void Main(string[] args)

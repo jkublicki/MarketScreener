@@ -88,7 +88,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     catch (Exception e)
                     {
                         Debug.WriteLine(e.ToString());
-                        throw e;
+                        ////
 
                         result = String.Concat(result, "   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url, 
                             ". Full exception: ", e, "\n");
@@ -123,7 +123,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         {                            
                             try
                             {
-                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First(); //tu pobranie first z pustej kolekcji?
+                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectNodes(n.FullXPATH).First(); //tu pobranie first z pustej kolekcji? <<<
+                                
                                 string? dataPoint = null; 
 
                                 if (n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
@@ -133,7 +134,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                                     try
                                     {
-                                        if (node.HasAttributes && node.Attributes["value"] != null)
+                                        if (node.HasAttributes && node.Attributes["value"] != null) //tu może być node == null <<<<<<
                                         {
                                             dataPoint = node.Attributes["value"].Value; //tu potrafi polecieć exception pomimo try https://stackoverflow.com/questions/30498612/try-catch-doesnt-catch-exception
                                             n.Value = dataPoint;
@@ -148,7 +149,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception e)
                                     {
                                         Debug.WriteLine(e.ToString());
-                                        throw e;
+                                        //
 
                                         result = String.Concat(result, "   Value acquisition (AttributeValue) failed - exception - for ", t, ", ", n.Name, "\n");
 
@@ -176,7 +177,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception e)
                                     {
                                         Debug.WriteLine(e.ToString());
-                                        throw e;
+                                        //
 
                                         result = String.Concat(result, "   Value acquisition (InnerText) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
@@ -204,7 +205,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                     catch (Exception e)
                                     {
                                         Debug.WriteLine(e.ToString());
-                                        throw e;
+                                        //
 
                                         result = String.Concat(result, "   Value acquisition (InnerHtml) failed - exception - for ", t, ", ", n.Name, "\n");
                                     }
@@ -218,7 +219,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             catch (Exception e)
                             {
                                 Debug.WriteLine(e.ToString());
-                                throw e;
+                                //
 
                                 result = String.Concat(result, "   XPATH select failed for ", t, ", node ", n.Name, "\n");
                             }

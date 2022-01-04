@@ -60,7 +60,7 @@ namespace MarketScreener
 
                     if (throwError)
                     {
-                        throw e;                        
+                        throw e;                     
                     }
                     return -1;
                 }
