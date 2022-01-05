@@ -46,7 +46,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         {
             if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, String.Concat(
                 "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", ticker, "'"), false, out bool _) == -1)
-                Log.Entry(String.Concat("HAPxYahooFinance.Service() is stuck! Can't service and can't update ", ticker));
+                Log.Entry(String.Concat("HAPxYahooFinance.Service() can't service and can't update ", ticker));
         }
 
         public static void Service(List<string> tickers, int tickerSleepMs)
@@ -56,6 +56,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
 
             int failCount = 0;
+            int databaseFailCount = 0;
 
             HtmlAgilityPack.HtmlWeb web = new();
             web.PreRequest = OnPreRequest;
@@ -92,7 +93,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                      
                     if (doc == null || doc.Text == null || doc.Text.Length < 100)
                     {   
-                        if (Log.Enabled) Log.Entry(String.Concat("   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() returned empty document from url ", url, ""));
+                        if (Log.Enabled) Log.Entry(String.Concat("  Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() returned empty document from url ", url, ""));
                         failCount++;
                         ServiceDeadUrl(t);
                         continue;
@@ -273,19 +274,24 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                         if (updatedRows == -1)
                         {
-                            if (Log.Enabled) Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, ""));
                             failCount++;
+                            databaseFailCount++;
+                            
+                            string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał                                                                                                                                                    
+                            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, quickUpdateSQL, false, out bool _) == -1)
+                            {
+                                failCount++;
+                                databaseFailCount++;
+                            }
+                                
 
-                            string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał
-                            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, quickUpdateSQL, false, out bool _) == -1 && Log.Enabled)
-                                Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for UpdateDate update too"));                            
                         }
 
                         int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
                         if (insertedRows == -1)
                         {
-                            if (Log.Enabled) Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "")); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
                             failCount++;
+                            databaseFailCount++;
                         }
                     }
 

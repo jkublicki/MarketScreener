@@ -84,10 +84,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             string result;
 
-            if (regex != null && dataPoint.Length >= 3 && (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint).Any()))
-                result = String.Concat("'", (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint)[0].Value), "'");
+            if (regex != null && dataPoint.Length > 0 && (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint).Any()))
+                result = new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint)[0].Value;
             else
-                result = String.Concat("'", dataPoint, "'"); 
+                result = dataPoint; 
 
             return string.Concat("'", result.Substring(0, Math.Min(50, result.Length)), "'");
         }
@@ -214,8 +214,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 success = true;
                 return "NULL";
             }
-
-            Debug.WriteLine("DecimalRangeLeft (" + dataPoint);
 
             string s = "";
             foreach (char c in dataPoint)

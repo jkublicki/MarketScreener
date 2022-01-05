@@ -61,6 +61,7 @@ namespace MarketScreener
             {
                 Debug.WriteLine("Failed to execute SQL statement: " + query);
             }
+            //Console.WriteLine(DateTime.Now.ToString() + ": gics query");
                
             using (dt)
             {

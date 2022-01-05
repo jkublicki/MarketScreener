@@ -10,12 +10,11 @@ namespace MarketScreener
 {
     internal class EntryPoint
     {
-        private const int timerIntervalMs = 5 * (1800 + 4000) + 2000; //HAPxYFManager.BatchSize * (HAPxYFManager.TickerSleepMs + 4000); //dodatkowo random i przerwa
+        //private const int timerIntervalMs = 5 * (1800 + 4000) + 2000; //HAPxYFManager.BatchSize * (HAPxYFManager.TickerSleepMs + 4000); //dodatkowo random i przerwa
+        private const int timerIntervalMs = 5 * (1650 + 3000) + 2750; //22 s to chyba dolna granica; ok 1/3 przypadków to ticker skip; wydłużyć czas o 1/6, do 26 s
         private const int maxRunTimeH = 8;
 
-        private static System.Timers.Timer triggerTimer;
-
-        
+        private static System.Timers.Timer triggerTimer;       
 
         static void Main(string[] args)
         {
@@ -56,9 +55,12 @@ namespace MarketScreener
         {
             if (HAPxYFManager.Status == HAPxYFManager.DataHunterStatus.OFF)
             {
+                //zmiana interwału powoduje reset odliczania czasu
+                triggerTimer.Interval = (int)Math.Floor(timerIntervalMs * (decimal)(new Random().NextDouble() * 0.05 + 1)); //unikanie powtarzalności
+
                 HAPxYFManager.Run();
                 
-                triggerTimer.Interval = (int)Math.Floor(timerIntervalMs * (decimal)(new Random().NextDouble() * 0.05 + 1)); //unikanie powtarzalności
+                
             }
                 
             else if (Log.Enabled)

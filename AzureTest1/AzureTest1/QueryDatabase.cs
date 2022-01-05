@@ -53,11 +53,10 @@ namespace MarketScreener
                     Debug.WriteLine(e.ToString());
 
                     if (Log.Enabled)
-                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed with message: ", e.Message));
+                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed:\n  Query: ", query, "\n  Message:", e.Message));
 
                     if (Log.DebugEnabled)
-                        Log.Entry(String.Concat("Failed query: ", query, " Full exception: ", e.ToString()));
-
+                        Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatement():\n", e.ToString()));
 
                     if (throwError)
                     {
@@ -99,10 +98,10 @@ namespace MarketScreener
                 success = false;
 
                 if (Log.Enabled)
-                    Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed with message: ", e.Message));
+                    Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed:\n  Query: ", query, "\n  Message:", e.Message));
 
                 if (Log.DebugEnabled)
-                    Log.Entry(String.Concat("Failed query: ", query, " Full exception: ", e.ToString()));
+                    Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatement():\n", e.ToString()));
 
                 if (throwError)
                 {
