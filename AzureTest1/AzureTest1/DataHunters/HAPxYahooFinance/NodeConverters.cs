@@ -28,7 +28,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         }
 
 
-        public static string ConvertValue(string? value, ConvertingFunctions converter, out bool success)
+        public static string ConvertValue(string? value, ConvertingFunctions converter, string? extraParam, out bool success)
         {
             switch (converter)
             {
@@ -61,7 +61,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     success = s7;
                     return v7;
                 case ConvertingFunctions.Varchar50:
-                    string v8 = Varchar50(value, out bool s8);
+                    string v8 = Varchar50(value, extraParam, out bool s8);
                     success = s8;
                     return v8;
 
@@ -72,7 +72,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
         }
 
-        private static string Varchar50(string? dataPoint, out bool success)
+        private static string Varchar50(string? dataPoint, string? regex, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -81,7 +81,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
 
             success = true;
-            return String.Concat("'", dataPoint, "'"); //uwaga, DODAC przycięcie
+
+            string result;
+
+            if (regex != null && dataPoint.Length >= 3 && (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint).Any()))
+                result = String.Concat("'", (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint)[0].Value), "'");
+            else
+                result = String.Concat("'", dataPoint, "'"); 
+
+            return string.Concat("'", result.Substring(0, Math.Min(50, result.Length)), "'");
         }
                 
         private static string EvalDate(string? dataPoint, out bool success)
@@ -110,7 +118,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
 
             success = true;
-            return result.Date.ToString("yyyy-MM-dd");
+            return String.Concat("'", result.Date.ToString("yyyy-MM-dd"), "'");
         }
 
         private static string GICSSector(string? dataPoint, out bool success)

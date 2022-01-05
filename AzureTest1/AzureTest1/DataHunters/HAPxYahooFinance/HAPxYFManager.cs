@@ -71,8 +71,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                     //TEST-usunąć!!!
                     
-                    tickers.Clear();
-                    tickers.Add("QURE");
+                    //tickers.Clear();
+                    //tickers.Add("QURE");
                     
 
             if (Log.Enabled)

@@ -35,7 +35,7 @@ namespace MarketScreener.Test
                 success = false;
             }
 
-            if (NodeConverters.ConvertValue("1.23 - 1.34", NodeConverters.ConvertingFunctions.DecimalRangeLeft, out bool _) != "1.23")
+            if (NodeConverters.ConvertValue("1.23 - 1.34", NodeConverters.ConvertingFunctions.DecimalRangeLeft, null, out bool _) != "1.23")
             {                
                 report += "Problem with DataHunters.HAPxYahooFinance.NodeConverters.ConvertValue()\n";
                 success = false;

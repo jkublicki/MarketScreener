@@ -52,7 +52,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         public static void Service(List<string> tickers, int tickerSleepMs)
         {
             const string urlBase = "https://finance.yahoo.com/quote/";
-            const bool skipDataExtraction = true;
+            const bool skipDataExtraction = false; //do debugowania, pominięcie zapisu do bazy
             WebsiteNodes.WebsiteNodeSet yahooEquityNodeSet = HAPxYFSettings.YahooEquityNodeSet();
 
             int failCount = 0;
@@ -83,7 +83,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     }
                     catch (Exception e)
                     {
-                        if (Log.Enabled) Log.Entry(String.Concat("   Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,
+                        if (Log.Enabled) Log.Entry(String.Concat("Skipping ticker ", t, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,
                             ". Full exception: ", e.ToString(), ""));
                         failCount++;
                         ServiceDeadUrl(t);
@@ -232,13 +232,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                             if (!success)
                             {
-                                if (Log.Enabled) Log.Entry(String.Concat("   Text search failed for ", t, ", node ", n.Name, ""));
+                                if (Log.Enabled) Log.Entry(String.Concat("  Text search failed for ", t, ", node ", n.Name, ""));
                                 failCount++;
                             }                            
                         }
 
                         
-                        string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, out bool su);
+                        string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, n.ExtraParam, out bool su);
                         if (su)
                         {
                             n.Value = s;
@@ -262,26 +262,29 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     }
 
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
-
-                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = '", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                        "' WHERE TickerYahoo = '", t, "'");
+                   
+                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'");
                     string insertSQL = String.Concat("INSERT INTO TICKER_HISTORY (", insertSQLColumns, " UpdateDate, SnapshotDate, TickerGoogleFinance) VALUES (",
                         insertSQLValues, "'", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), 
                         "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
 
                     if (!skipDataExtraction)
-                    {
+                    {   
                         int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
                         if (updatedRows == -1)
                         {
-                            if (Log.Enabled) Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, ""));
+                            if (Log.Enabled) Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", updateSQL, ""));
                             failCount++;
-                        }   
+
+                            string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał
+                            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, quickUpdateSQL, false, out bool _) == -1 && Log.Enabled)
+                                Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for UpdateDate update too"));                            
+                        }
 
                         int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
                         if (insertedRows == -1)
                         {
-                            if (Log.Enabled) Log.Entry(String.Concat("   QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "")); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
+                            if (Log.Enabled) Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed for query: ", insertSQL, "")); //przydałoby się out message, a nie ten bool, ale co z przypadkiem data table? do wymyślenia ładniejsze rozwiązanie                                                                                                                            
                             failCount++;
                         }
                     }

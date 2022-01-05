@@ -28,8 +28,6 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
                     },
-                    
-                    
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -39,31 +37,21 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Currency",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50 //do poprwy, waluta na końcu tekstu, może regex
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ExtraParam = @"([A-Z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                     },
-                    
-                    
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
                         Name = "CompanyName",
                         ServiceMode = WebsiteNodes.ServiceModes.XPATH,
-                        //FullXPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[2]/div[1]/div[1]/h1",
-
-
                         FullXPATH = "//*[@id='quote-header-info']/div[2]/div[1]/div[1]/h1/text()",
-
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "CompanyName",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ExtraParam = @".+?(?= \()"
                     },
-                    
-                    
-
-
-
-
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",

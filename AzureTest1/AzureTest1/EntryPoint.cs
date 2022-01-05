@@ -29,10 +29,10 @@ namespace MarketScreener
             if (Log.Enabled)
                 Log.Entry("Application start");
 
-
+            
             SetTimer();
 
-            while (line != "STOP" || (DateTime.UtcNow - startTime).Hours >= maxRunTimeH)
+            while (line != "STOP" || (DateTime.UtcNow - startTime).TotalHours >= maxRunTimeH)
             {
                 line = Console.ReadLine();
             }
