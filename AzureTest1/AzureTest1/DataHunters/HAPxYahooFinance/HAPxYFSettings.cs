@@ -28,6 +28,19 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
                     },
+                    ////*[@id="quote-market-notice"]/span
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "MarketState",
+                        ServiceMode = WebsiteNodes.ServiceModes.XPATH,
+                        FullXPATH = "//*[@id='quote-market-notice']/span",
+                        DataLocation = WebsiteNodes.DataLocations.InnerText,
+                        ColumnName = "MarketState",
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ExtraParam = @"open|close" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
+                    },
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -38,7 +51,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         ColumnName = "Currency",
                         Tables = new List<string>() { "ENU_TICKER" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
-                        ExtraParam = @"([A-Z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
+                        ExtraParam = @"([A-z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -255,6 +268,72 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         ColumnName = "RecommendationRating", //rec-rating-txt
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "NumberOfAnalystOpinions",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = "raw\":",
+                        SearchElementBeforeLeft = "AnalystOpinions",
+                        LeftSEMaxDistance = 20,
+                        SearchElementRight = ",",
+                        ColumnName = "NumberOfAnalystOpinions", //rec-rating-txt
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "ReturnOnAssets",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = "raw\":",
+                        SearchElementBeforeLeft = "returnOnAssets\":", //tu nie może być verbatim string literal, czyli @; YF podaje RoA 5% jako 0.05
+                        LeftSEMaxDistance = 20,
+                        SearchElementRight = ",",
+                        ColumnName = "ReturnOnAssets", 
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                    },                    
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "TargetLowPrice",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = "raw\":",
+                        SearchElementBeforeLeft = "targetLowPrice",
+                        LeftSEMaxDistance = 20,
+                        SearchElementRight = ",",
+                        ColumnName = "TargetLowPrice", 
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "TargetHighPrice",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = "raw\":",
+                        SearchElementBeforeLeft = "targetHighPrice",
+                        LeftSEMaxDistance = 20,
+                        SearchElementRight = ",",
+                        ColumnName = "TargetHighPrice", 
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "CountryName",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = ",\"country\":\"",
+                        SearchElementBeforeLeft = ",\"phone\":",
+                        LeftSEMaxDistance = 40,
+                        SearchElementRight = "\",",
+                        ColumnName = "CountryName",
+                        Tables = new List<string>() { "ENU_TICKER" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
+                        ExtraParam = @"^.{1,25}"
                     }
                 }
             };

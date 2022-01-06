@@ -112,15 +112,31 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
                         n.Value = null; //bez tego przeniosłoby wartość z poprzedniego tickera!
+                        n.DataAreaFound = false;
+
                         n.Ticker = t;
+                        HtmlAgilityPack.HtmlNode? node = null;
 
                         if (n.ServiceMode == WebsiteNodes.ServiceModes.XPATH)
                         {                            
                             try
                             {
-                                HtmlAgilityPack.HtmlNode node = doc.DocumentNode.SelectSingleNode(n.FullXPATH);
+                                node = doc.DocumentNode.SelectSingleNode(n.FullXPATH);
 
-                                string? dataPoint = null; 
+                                string? dataPoint = null;
+
+                                if (node == null)
+                                {
+                                    if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed - node not found - for ", t, ", node ", n.Name, ""));
+                                    failCount++;
+                                    n.Value = "NULL";
+                                    n.DataAreaFound = false;
+                                }
+                                else
+                                    n.DataAreaFound = true; 
+                                    
+                               
+                                
 
                                 if (node != null && n.DataLocation == WebsiteNodes.DataLocations.AttributeValue)
                                 {
@@ -148,6 +164,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                                 {
                                     try
                                     {
+
+
                                         if (node.InnerText != null)
                                         {
                                             dataPoint = node.InnerText;
@@ -196,7 +214,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             }
                             catch (Exception e)
                             {
-                                if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed for ", t, ", node ", n.Name, ""));
+                                if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed - exception - for ", t, ", node ", n.Name, ""));
                                 if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
                                 failCount++;
                             }
@@ -235,20 +253,29 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             {
                                 if (Log.Enabled) Log.Entry(String.Concat("  Text search failed for ", t, ", node ", n.Name, ""));
                                 failCount++;
-                            }                            
+                            }     
+                            else
+                                n.DataAreaFound = true; 
                         }
 
                         
-                        string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, n.ExtraParam, out bool su);
-                        if (su)
+                        if (n.DataAreaFound)
                         {
-                            n.Value = s;
-                            if (Log.DebugEnabled && Log.Enabled) Log.Entry(String.Concat("  ", t, ", ", n.Name, ", converted value: ", n.Value, ""));
+                            string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, n.ExtraParam, out bool su);
+                            if (su)
+                            {
+                                n.Value = s;
+                                if (Log.DebugEnabled && Log.Enabled) Log.Entry(String.Concat("  ", t, ", ", n.Name, ", converted value: ", n.Value, ""));
+                            }
+                            else
+                            {
+                                if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, ""));
+                                failCount++;
+                                n.Value = "NULL";
+                            }
                         }
                         else
                         {
-                            if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", n.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", n.Ticker, ""));
-                            failCount++;
                             n.Value = "NULL";
                         }
 

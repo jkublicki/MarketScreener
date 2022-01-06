@@ -86,6 +86,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             if (regex != null && dataPoint.Length > 0 && (new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint).Any()))
                 result = new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint)[0].Value;
+            else if (regex != null && dataPoint.Length > 0 && !(new System.Text.RegularExpressions.Regex(regex).Matches(dataPoint).Any()))
+                return "NULL";
             else
                 result = dataPoint; 
 

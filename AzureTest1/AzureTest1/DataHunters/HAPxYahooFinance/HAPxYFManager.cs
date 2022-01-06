@@ -69,10 +69,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             List<string> tickers = GetYahooTickers(false); //powinno być ignore open markets = true
 
-                    //TEST-usunąć!!!
-                    
+                    //chamski TEST-usunąć!!!                    
                     //tickers.Clear();
-                    //tickers.Add("QURE");
+                    //tickers.Add("ATD.WA");
                     
 
             if (Log.Enabled)
