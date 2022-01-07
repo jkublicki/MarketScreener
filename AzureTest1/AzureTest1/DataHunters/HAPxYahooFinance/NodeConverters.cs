@@ -33,23 +33,23 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             switch (converter)
             {
                 case ConvertingFunctions.EvalDecimal:
-                    string v1 = EvalDecimal(value, out bool s1);
+                    string v1 = EvalDecimal(value, extraParam, out bool s1);
                     success = s1;
                     return v1;
                 case ConvertingFunctions.EvalInt:
-                    string v2 = EvalInt(value, out bool s2);
+                    string v2 = EvalInt(value, extraParam, out bool s2);
                     success = s2;
                     return v2; 
                 case ConvertingFunctions.DecimalRangeLeft:
-                    string v3 = DecimalRangeLeft(value, out bool s3);
+                    string v3 = DecimalRangeLeft(value, extraParam, out bool s3);
                     success = s3;
                     return v3;
                 case ConvertingFunctions.DecimalRangeRight:
-                    string v4 = DecimalRangeRight(value, out bool s4);
+                    string v4 = DecimalRangeRight(value, extraParam, out bool s4);
                     success = s4;
                     return v4;
                 case ConvertingFunctions.YFMarketCapToMillion:
-                    string v5 = YFMarketCapToMillion(value, out bool s5);
+                    string v5 = YFMarketCapToMillion(value, extraParam, out bool s5);
                     success = s5;
                     return v5;
                 case ConvertingFunctions.GICSSector:
@@ -146,7 +146,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             }
         }
 
-        private static string YFMarketCapToMillion(string? dataPoint, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
+        private static string YFMarketCapToMillion(string? dataPoint, string? lowerLimit, out bool success) //specyficzne dla Yahoo Finance, dotyczy kapitalizacji, short scale
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -167,12 +167,21 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             if (dataPoint.Contains('T'))
                 result *= 1000000;
             else if (dataPoint.Contains('B'))
-                result *= 1000;            
-                        
+                result *= 1000;
+
+            if (lowerLimit != null && Decimal.TryParse(lowerLimit, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal limit))
+            {
+                if (result <= limit)
+                {
+                    success = false;
+                    return "NULL";
+                }
+            }
+
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string EvalInt(string? dataPoint, out bool success)
+        private static string EvalInt(string? dataPoint, string? lowerLimit, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -183,10 +192,20 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             string s = dataPoint.Trim();
 
             success = Int32.TryParse(s, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out int result);
+
+            if (lowerLimit != null && Decimal.TryParse(lowerLimit, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal limit))
+            {
+                if (result <= limit)
+                {
+                    success = false;
+                    return "NULL";
+                }
+            }
+
             return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
         }
 
-        private static string EvalDecimal(string? dataPoint, out bool success)
+        private static string EvalDecimal(string? dataPoint, string? lowerLimit, out bool success)
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -198,18 +217,29 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             success = Decimal.TryParse(s, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
 
+            //co jesli za duzo miejsc po przecinku i mozna by zaokrąglić?
             if (s.Length > EvalDecimalPrecisionLimit + 1 && result >= 0 || s.Length > EvalDecimalPrecisionLimit + 2 && result < 0)
             {
                 success = false;
-                return "0";
+                return "NULL";
             }
-            else
-                return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
+
+
+            if (lowerLimit != null && Decimal.TryParse(lowerLimit, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal limit))
+            {
+                if (result <= limit)
+                {
+                    success = false;
+                    return "NULL";
+                }
+            }
+
+            return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
 
         }
 
         
-        private static string DecimalRangeLeft(string? dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeLeft(string? dataPoint, string? lowerLimit, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -241,6 +271,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).First(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
                 if (success)
                 {
+                    if (lowerLimit != null && Decimal.TryParse(lowerLimit, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal limit))
+                    {
+                        if (result <= limit)
+                        {
+                            success = false;
+                            return "NULL";
+                        }
+                    }
+
                     return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
                 }
             }
@@ -249,7 +288,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             return "NULL";
         }
 
-        private static string DecimalRangeRight(string? dataPoint, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
+        private static string DecimalRangeRight(string? dataPoint, string? lowerLimit, out bool success) //nie obsługuje ujemnych, aby obsługiwać "12.34 - 56.78"
         {
             if (dataPoint == null || dataPoint == "")
             {
@@ -271,6 +310,15 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 success = Decimal.TryParse(s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last(), NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal result);
                 if (success)
                 {
+                    if (lowerLimit != null && Decimal.TryParse(lowerLimit, NumberStyles.Number, CultureInfo.CreateSpecificCulture("en-US"), out decimal limit))
+                    {
+                        if (result <= limit)
+                        {
+                            success = false;
+                            return "NULL";
+                        }
+                    }
+
                     return result.ToString(CultureInfo.CreateSpecificCulture("en-US"));
                 }
             }

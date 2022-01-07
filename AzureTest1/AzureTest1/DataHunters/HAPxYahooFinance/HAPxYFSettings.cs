@@ -26,7 +26,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.AttributeValue,
                         ColumnName = "Price",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     },
                     ////*[@id="quote-market-notice"]/span
                     new WebsiteNodes.WebsiteNode()
@@ -74,7 +75,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "PreviousClose",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -86,7 +88,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "TargetEst1y",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -97,7 +100,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Week52RangeLow",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -108,7 +112,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Week52RangeHigh",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -119,7 +124,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DayRangeLow",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -130,7 +136,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DayRangeHigh",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -141,7 +148,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerHtml,
                         ColumnName = "Volume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -152,7 +160,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "AvgVolume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -163,7 +172,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "MarketCapMnUSD",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.YFMarketCapToMillion
+                        ConverterFunction = NodeConverters.ConvertingFunctions.YFMarketCapToMillion,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -174,7 +184,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Beta",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -185,7 +195,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "PE",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -218,7 +228,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "ForwardDividend",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -229,7 +240,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DividendYield",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight
+                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -267,7 +279,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",\"",
                         ColumnName = "RecommendationRating", //rec-rating-txt
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.99"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -280,7 +293,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "NumberOfAnalystOpinions", //rec-rating-txt
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -306,7 +320,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "TargetLowPrice", 
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -319,7 +334,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "TargetHighPrice", 
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -334,6 +350,20 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         Tables = new List<string>() { "ENU_TICKER" },
                         ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
                         ExtraParam = @"^.{1,25}"
+                    },
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "PayoutRatio",
+                        ServiceMode = WebsiteNodes.ServiceModes.DOCTEXT,
+                        SearchElementLeft = "raw\":",
+                        SearchElementBeforeLeft = "payoutRatio\":{",
+                        LeftSEMaxDistance = 20,
+                        SearchElementRight = ",",
+                        ColumnName = "PayoutRatio",
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
                     }
                 }
             };
