@@ -45,7 +45,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
         private static void ServiceDeadUrl(string ticker)
         {
             if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, String.Concat(
-                "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", ticker, "'"), false, out bool _) == -1)
+                "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '", ticker, "'"), false, out bool _) == -1)
                 Log.Entry(String.Concat("HAPxYahooFinance.Service() can't service and can't update ", ticker));
         }
 
@@ -74,6 +74,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             {
                 foreach (string t in tickers)
                 {
+
+
+
+
                     string url = urlBase + t;
 
                     HtmlAgilityPack.HtmlDocument? doc;
@@ -108,6 +112,9 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     string updateSQL = "";
                     string insertSQLColumns = "";
                     string insertSQLValues = "";
+
+
+
 
                     foreach (WebsiteNodes.WebsiteNode n in yahooEquityNodeSet.Nodes)
                     {
@@ -261,7 +268,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         
                         if (n.DataAreaFound)
                         {
-                            string s = NodeConverters.ConvertValue(n.Value, n.ConverterFunction, n.ExtraParam, out bool su);
+                            string s = HAP.StringConverters.ConvertValue(n.Value, n.ConverterFunction, n.ExtraParam, out bool su);
                             if (su)
                             {
                                 n.Value = s;
@@ -291,10 +298,10 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                     //tutaj jest komplet danych dla tickera, siedzi w node-ach w node-secie 
                    
-                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'");
-                    string insertSQL = String.Concat("INSERT INTO TICKER_HISTORY (", insertSQLColumns, " UpdateDate, SnapshotDate, TickerGoogleFinance) VALUES (",
+                    updateSQL = String.Concat("UPDATE ENU_TICKER SET ", updateSQL, "UpdateDate = GETUTCDATE() WHERE TickerYF = '", t, "'");
+                    string insertSQL = String.Concat("INSERT INTO TICKER_HISTORY (", insertSQLColumns, " UpdateDate, TradingDay, TickerGF) VALUES (",
                         insertSQLValues, "'", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), "', '", DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), 
-                        "', (SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER WHERE TickerYahoo = '", t, "'))");
+                        "', (SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '", t, "'))");
 
                     if (!skipDataExtraction)
                     {   
@@ -304,7 +311,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                             failCount++;
                             databaseFailCount++;
                             
-                            string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYahoo = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał                                                                                                                                                    
+                            string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał                                                                                                                                                    
                             if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, quickUpdateSQL, false, out bool _) == -1)
                             {
                                 failCount++;

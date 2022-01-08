@@ -10,8 +10,6 @@ namespace MarketScreener.Test
 {
     internal static class SelfTest
     {
-
-
         public static string RunSelfTest(out bool success)
         {
             string report = "";
@@ -29,13 +27,13 @@ namespace MarketScreener.Test
                 success = false;
             }
 
-            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, "SELECT TOP 1 TickerGoogleFinance FROM ENU_TICKER", false, out DataTable _) == -1)
+            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, "SELECT TOP 1 TickerGF FROM ENU_TICKER", false, out DataTable _) == -1)
             {
                 report += "Problem with QueryDatabase.ExecuteSQLStatement()\n";
                 success = false;
             }
 
-            if (NodeConverters.ConvertValue("1.23 - 1.34", NodeConverters.ConvertingFunctions.DecimalRangeLeft, null, out bool _) != "1.23")
+            if (DataHunters.HAP.StringConverters.ConvertValue("1.23 - 1.34", DataHunters.HAP.StringConverters.ConvertingFunctions.DecimalRangeLeft, null, out bool _) != "1.23")
             {                
                 report += "Problem with DataHunters.HAPxYahooFinance.NodeConverters.ConvertValue()\n";
                 success = false;

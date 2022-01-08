@@ -26,10 +26,21 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.AttributeValue,
                         ColumnName = "Price",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     },
-                    ////*[@id="quote-market-notice"]/span
+                    new WebsiteNodes.WebsiteNode()
+                    {
+                        Website = "finance.yahoo.com",
+                        Name = "PriceOpen",
+                        ServiceMode = WebsiteNodes.ServiceModes.XPATH,
+                        FullXPATH = "//*[@data-test='OPEN-value']",
+                        DataLocation = WebsiteNodes.DataLocations.InnerText,
+                        ColumnName = "PriceOpen",
+                        Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
+                        ExtraParam = "0.0"
+                    },
                     new WebsiteNodes.WebsiteNode()
                     {
                         Website = "finance.yahoo.com",
@@ -39,7 +50,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "MarketState",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.Varchar50,
                         ExtraParam = @"open|close" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -51,7 +62,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Currency",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.Varchar50,
                         ExtraParam = @"([A-z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -63,7 +74,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "CompanyName",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.Varchar50,
                         ExtraParam = @".+?(?= \()"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -75,7 +86,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "PreviousClose",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -88,7 +99,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "TargetEst1y",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -100,7 +111,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Week52RangeLow",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeLeft,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -112,7 +123,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Week52RangeHigh",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeRight,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -124,7 +135,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DayRangeLow",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeLeft,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -136,7 +147,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DayRangeHigh",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeRight,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -148,7 +159,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerHtml,
                         ColumnName = "Volume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalInt,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -160,7 +171,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "AvgVolume",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalInt,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -172,7 +183,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "MarketCapMnUSD",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.YFMarketCapToMillion,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.YFMarketCapToMillion,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -184,7 +195,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "Beta",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -195,7 +206,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "PE",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -206,7 +217,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "EPSTTM",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -217,7 +228,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "EarningsDate",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDate
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDate
                     },
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -228,7 +239,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "ForwardDividend",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeLeft,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeLeft,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -240,7 +251,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "DividendYield",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.DecimalRangeRight,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.DecimalRangeRight,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -252,7 +263,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         DataLocation = WebsiteNodes.DataLocations.InnerText,
                         ColumnName = "ExDividendDate",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDate
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDate
                     },
 
                     new WebsiteNodes.WebsiteNode()
@@ -266,7 +277,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = "\",\"",
                         ColumnName = "GICSSector",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.GICSSector
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.GICSSector
                     },                    
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -279,7 +290,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",\"",
                         ColumnName = "RecommendationRating", //rec-rating-txt
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.99"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -293,7 +304,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "NumberOfAnalystOpinions", //rec-rating-txt
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalInt,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalInt,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -307,7 +318,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "ReturnOnAssets", 
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal
                     },                    
                     new WebsiteNodes.WebsiteNode()
                     {
@@ -320,7 +331,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "TargetLowPrice", 
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -334,7 +345,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "TargetHighPrice", 
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -348,7 +359,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = "\",",
                         ColumnName = "CountryName",
                         Tables = new List<string>() { "ENU_TICKER" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
                         ExtraParam = @"^.{1,25}"
                     },
                     new WebsiteNodes.WebsiteNode()
@@ -362,7 +373,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                         SearchElementRight = ",",
                         ColumnName = "PayoutRatio",
                         Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
-                        ConverterFunction = NodeConverters.ConvertingFunctions.EvalDecimal,
+                        ConverterFunction = HAP.StringConverters.ConvertingFunctions.EvalDecimal,
                         ExtraParam = "0.0"
                     }
                 }

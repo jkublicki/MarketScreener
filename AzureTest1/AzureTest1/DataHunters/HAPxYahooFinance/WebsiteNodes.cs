@@ -35,7 +35,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             public int LeftSEMaxDistance;
             public string SearchElementRight; //jw. występujący po danych
             public string? Value; //może default value @"NULL"
-            public NodeConverters.ConvertingFunctions ConverterFunction;
+            public DataHunters.HAP.StringConverters.ConvertingFunctions ConverterFunction;
             public string ColumnName;
             public List<string> Tables; //zakładając, że update wielu tabel, ale tabele mają tak samo nazwane kolumny odpowiadające temu punktowi danych
             public string? ExtraParam; //parametr, zastosowanie specyficzne dla konwertera: varchar - regex, liczbowe - dolny limit (nieakceptowany)

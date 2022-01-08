@@ -12,15 +12,18 @@ namespace MarketScreener
     {
         //private const int timerIntervalMs = 5 * (1800 + 4000) + 2000; //HAPxYFManager.BatchSize * (HAPxYFManager.TickerSleepMs + 4000); //dodatkowo random i przerwa
         private const int timerIntervalMs = 5 * (1650 + 3000) + 2750; //22 s to chyba dolna granica; ok 1/3 przypadków to ticker skip; wydłużyć czas o 1/6, do 26 s
-        private const int maxRunTimeH = 8;
+        private const int maxRunTimeH = 8; //8
 
-        private static System.Timers.Timer triggerTimer;       
+        private static System.Timers.Timer triggerTimer;
+
+        private static DateTime startTime;
 
         static void Main(string[] args)
         {
             string line = "";
-            DateTime startTime = DateTime.UtcNow;
-            
+
+            SetTimer();
+
             Console.WriteLine("MarketScreener will be running for " + maxRunTimeH.ToString() + " hours from " + startTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.");
             if (Log.DebugEnabled)
                 Console.WriteLine("Debug enabled");
@@ -29,12 +32,15 @@ namespace MarketScreener
                 Log.Entry("Application start");
 
             
-            SetTimer();
+            
 
-            while (line != "STOP" || (DateTime.UtcNow - startTime).TotalHours >= maxRunTimeH)
+            while (line != "STOP")
             {
-                line = Console.ReadLine();
+                line = Console.ReadLine(); 
+                
             }
+
+            triggerTimer.Enabled = false;
 
             if (Log.Enabled)
                 Log.Entry("Application stop");
@@ -49,12 +55,23 @@ namespace MarketScreener
             triggerTimer.Elapsed += OnTimerTick;
             triggerTimer.AutoReset = true;
             triggerTimer.Enabled = true;
+
+            startTime = DateTime.UtcNow;
         }
 
         private static void OnTimerTick(Object source, ElapsedEventArgs e)
         {
             if (HAPxYFManager.Status == HAPxYFManager.DataHunterStatus.OFF)
             {
+                 if ((DateTime.UtcNow - startTime).TotalHours >= maxRunTimeH) //TotalHours
+                {
+                    if (Log.Enabled)
+                        Log.Entry("Application stop");
+
+                    Environment.Exit(0);
+                }
+
+
                 //zmiana interwału powoduje reset odliczania czasu
                 triggerTimer.Interval = (int)Math.Floor(timerIntervalMs * (decimal)(new Random().NextDouble() * 0.05 + 1)); //unikanie powtarzalności
 

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace MarketScreener.DataHunters.HAPxYahooFinance
+namespace MarketScreener.DataHunters.HAP
 {
 
     //funkcje konwertujące odczytane dane na string nadający się do SQL-a, ewaluacja odczytanych danych
     //założenia: notacja en-US (kropka odziela miejsca dziesiętne, 10^9 to "billion", przecinki są ignorowane)
-    internal static class NodeConverters
+    internal static class StringConverters
     {
         const int EvalDecimalPrecisionLimit = 19;
 

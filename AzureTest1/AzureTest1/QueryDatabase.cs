@@ -79,6 +79,9 @@ namespace MarketScreener
 
         public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out bool success)
         {
+            if (Log.DebugEnabled)
+                Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute:\n", query));
+
             try
             {
                 SqlConnection connection = new(connectionString);

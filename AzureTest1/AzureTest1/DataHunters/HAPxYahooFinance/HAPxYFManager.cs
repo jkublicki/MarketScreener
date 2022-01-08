@@ -28,11 +28,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
             //todo: uzupełnić słownik świąt, teraz są tylko weekendy
 
-            string query = String.Concat("SELECT TOP ", BatchSize.ToString(), " TickerYahoo ",
-                "FROM ENU_TICKER ET JOIN ENU_MARKET EM ON ET.MarketCodeGoogleFinance = EM.MarketCodeGoogleFinance ",
-                "LEFT JOIN ENU_HOLIDAY EH ON EM.MarketCodeGoogleFinance = EH.MarketCodeGoogleFinance AND EH.HolidayDate = CAST(GETUTCDATE() AS date) ",
-                "WHERE ET.TickerYahoo IS NOT NULL AND (ET.UpdateDate IS NULL OR CAST(ET.UpdateDate AS date) < CAST(GETUTCDATE() AS date)) ",
-                "AND EH.HolidayDate IS NULL ");
+            string query = String.Concat("SELECT TOP ", BatchSize.ToString(), " TickerYF ",
+                "FROM ENU_TICKER ET JOIN ENU_MARKET EM ON ET.MarketCodeGF = EM.MarketCodeGF ",
+                "LEFT JOIN ENU_HOLIDAY EH ON EM.MarketCodeGF = EH.MarketCodeGF AND EH.HolidayDay = CAST(GETUTCDATE() AS date) ",
+                "WHERE ET.TickerYF IS NOT NULL AND (ET.UpdateDate IS NULL OR CAST(ET.UpdateDate AS date) < CAST(GETUTCDATE() AS date)) ",
+                "AND EH.HolidayDay IS NULL ");
 
             if (skipOpenMarkets)
             {
@@ -75,9 +75,11 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                     
 
             if (Log.Enabled)
-                Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));                
+                Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));
 
-            HAPxYahooFinance.Service(tickers, TickerSleepMs);
+            //HAPxYahooFinance.Service(tickers, TickerSleepMs);
+            new HAP.HAPDataExtractor().Extract(@"BAVA.CO", @"https://finance.yahoo.com/quote/BAVA.CO", new HAP.WebsiteStructure("CRAWL_1"));
+
 
             Status = DataHunterStatus.OFF;
 
