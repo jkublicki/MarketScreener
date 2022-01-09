@@ -20,6 +20,11 @@ namespace MarketScreener
 
         static void Main(string[] args)
         {
+            //debug
+            //Console.WriteLine(String.Join(";\n", new DataHunters.HAP.HapManager().Urls));
+            //return;
+
+
             string line = "";
 
             SetTimer();
