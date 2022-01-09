@@ -20,10 +20,10 @@ namespace MarketScreener
 
         static void Main(string[] args)
         {
-            //debug
-            //Console.WriteLine(String.Join(";\n", new DataHunters.HAP.HapManager().Urls));
-            //return;
+            //test - tempshit
+            new DataHunters.HAP.HAPManager().Run();
 
+            /*
 
             string line = "";
 
@@ -49,6 +49,8 @@ namespace MarketScreener
 
             if (Log.Enabled)
                 Log.Entry("Application stop");
+
+            */
 
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MarketScreener.DataHunters.HAP
 {
-    internal class HapManager
+    internal class HAPManager
     {
         private PlanConfiguration planConfiguration = new();
 
@@ -42,6 +42,34 @@ namespace MarketScreener.DataHunters.HAP
             }
         }
 
+        private bool breakSingal = false;
+
+        private void Service()
+        {
+            if (urls.Any())
+            {
+                (string, string) url = urls.First();
+                urls.Remove(url);
+
+                new HAP.HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure);
+            }
+        }
+
+        public void Run()
+        {
+            //tempshit, dodać timer
+            while (urls.Any() && !breakSingal)
+            {
+                Service();
+                Thread.Sleep((int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1)));
+            }
+        }
+
+        public void BreakRun()
+        {
+            breakSingal = true;
+        }
+
         //TODO po 2022-01-09
         //publiczna funkcja Run()
         //w niej dla jednego z urls new HAP.HAPDataExtractor().Extract(..., ..., planConfigurtion.SiteStructure); 
@@ -50,6 +78,8 @@ namespace MarketScreener.DataHunters.HAP
         //loguje początek i koniec run
         //wymyślić jak zrobić manualne przerwanie, aby było pomiędzy extractami - nasłuch na event w Main()?
         //docelowo pobierać website structure z bazy - rozbudować PlanConfiguration.cs
+        //czy ok że ten manager nie ma konstruktora??
+        //z innej beczki - niech wywołanie tej aplikacji będzie co godzine na niecala godzine - na wypadek problemu z polaczeniem na etapie pobierania configa, bo to moze udupic całe działanie
 
     }
 }

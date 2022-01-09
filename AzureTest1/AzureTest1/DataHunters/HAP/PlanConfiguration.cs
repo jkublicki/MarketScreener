@@ -26,7 +26,18 @@ namespace MarketScreener.DataHunters.HAP
         public WebsiteStructure SiteStructure
         {
             //TODO
-            get { return null;  }
+            //konstruktor site structure to tempshit / ogólnie przemyśleć czy powinien być i coś sensownego zwracać, od pobrania struktury jest ta klasa
+            get
+            {
+                if (siteStructure == null)
+                {
+                    siteStructure = new("dupa_123");
+                    return siteStructure;
+                }
+                    
+                else
+                    return siteStructure;
+            }
         }
 
         public string PlanName
