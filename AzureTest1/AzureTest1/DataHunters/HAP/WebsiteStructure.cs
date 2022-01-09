@@ -34,6 +34,18 @@ namespace MarketScreener.DataHunters.HAP
                 new WebsiteElement()
                 {
 
+                    Name = "PriceClose",
+                    ServiceMode = WebsiteElement.ServiceModes.XPATH,
+                    XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]", //Price = PriceClose, bo obsługuję tylko zamknięte rynki
+                    DataLocation = WebsiteElement.DataLocations.AttributeValue,
+                    ColumnName = "PriceClose",
+                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
+                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ExtraParam = "0.0"
+                },
+                new WebsiteElement()
+                {
+
                     Name = "PriceOpen",
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='OPEN-value']",
@@ -380,103 +392,141 @@ namespace MarketScreener.DataHunters.HAP
                 }
             };
 
-
             SQLStatements = new List<string>()
             {
-                @"UPDATE ENU_TICKER SET 
-                CompanyName = {CompanyName}
-                ,MarketCapMnUSD = {MarketCapMnUSD}
-                ,GICSSector = {GICSSector}
-                ,Currency = {Currency}
-                ,Price = {Price}
-                ,PreviousClose = {PreviousClose}
-                ,TargetEst1y = {TargetEst1y}
-                ,Week52RangeLow = {Week52RangeLow}
-                ,Week52RangeHigh = {Week52RangeHigh}
-                ,Volume = {Volume}
-                ,AvgVolume = {AvgVolume}
-                ,RecommendationRating = {RecommendationRating}
-                ,Beta = {Beta}
-                ,PE = {PE}
-                ,EPSTTM = {EPSTTM}
-                ,EarningsDate = {EarningsDate}
-                ,ForwardDividend = {ForwardDividend}
-                ,DividendYield = {DividendYield}
-                ,ExDividendDate = {ExDividendDate}
-                ,DayRangeLow = {DayRangeLow}
-                ,DayRangeHigh = {DayRangeHigh}
-                ,CountryName = {CountryName}
-                ,MarketState = {MarketState}
-                ,TargetHighPrice = {TargetHighPrice}
-                ,TargetLowPrice = {TargetLowPrice}
-                ,ReturnOnAssets = {ReturnOnAssets}
-                ,NumberOfAnalystOpinions = {NumberOfAnalystOpinions}
-                ,PayoutRatio = {PayoutRatio}
-                ,UpdateDate = GETUTCDATE() 
-                WHERE TickerYF = '{UrlKey}'",
+                //jeżeli rynek jest zamknięty, update ENU_TICKER
+                @"IF ((SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))) IS NOT NULL)
+                    UPDATE ENU_TICKER SET 
+                    CompanyName = {CompanyName}
+                    ,MarketCapMnUSD = {MarketCapMnUSD}
+                    ,GICSSector = {GICSSector}
+                    ,Currency = {Currency}
+                    ,TradingDay = (SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
+                    ,Price = {Price}
+                    ,PriceClose = {PriceClose}
+                    ,PriceOpen = {PriceOpen}
+                    ,PreviousClose = {PreviousClose}
+                    ,TargetEst1y = {TargetEst1y}
+                    ,Week52RangeLow = {Week52RangeLow}
+                    ,Week52RangeHigh = {Week52RangeHigh}
+                    ,Volume = {Volume}
+                    ,AvgVolume = {AvgVolume}
+                    ,RecommendationRating = {RecommendationRating}
+                    ,Beta = {Beta}
+                    ,PE = {PE}
+                    ,EPSTTM = {EPSTTM}
+                    ,EarningsDate = {EarningsDate}
+                    ,ForwardDividend = {ForwardDividend}
+                    ,DividendYield = {DividendYield}
+                    ,ExDividendDate = {ExDividendDate}
+                    ,DayRangeLow = {DayRangeLow}
+                    ,DayRangeHigh = {DayRangeHigh}
+                    ,CountryName = {CountryName}
+                    ,MarketState = {MarketState}
+                    ,TargetHighPrice = {TargetHighPrice}
+                    ,TargetLowPrice = {TargetLowPrice}
+                    ,ReturnOnAssets = {ReturnOnAssets}
+                    ,NumberOfAnalystOpinions = {NumberOfAnalystOpinions}
+                    ,PayoutRatio = {PayoutRatio}
+                    ,UpdateDate = GETUTCDATE() 
+                    WHERE TickerYF = '{UrlKey}'",
 
-                @"INSERT INTO TICKER_HISTORY 
-                (Price
-                ,PriceOpen
-                ,MarketState
-                ,PreviousClose
-                ,TargetEst1y
-                ,Week52RangeLow
-                ,Week52RangeHigh
-                ,DayRangeLow
-                ,DayRangeHigh
-                ,Volume
-                ,AvgVolume
-                ,MarketCapMnUSD
-                ,Beta
-                ,PE
-                ,EPSTTM
-                ,EarningsDate
-                ,ForwardDividend
-                ,DividendYield
-                ,ExDividendDate
-                ,RecommendationRating
-                ,NumberOfAnalystOpinions
-                ,ReturnOnAssets
-                ,TargetLowPrice
-                ,TargetHighPrice
-                ,PayoutRatio
-                ,UpdateDate
-                ,TradingDay
-                ,TickerGF)
-                VALUES 
-                ({Price}
-                ,{PriceOpen}
-                ,{MarketState}
-                ,{PreviousClose}
-                ,{TargetEst1y}
-                ,{Week52RangeLow}
-                ,{Week52RangeHigh}
-                ,{DayRangeLow}
-                ,{DayRangeHigh}
-                ,{Volume}
-                ,{AvgVolume}
-                ,{MarketCapMnUSD}
-                ,{Beta}
-                ,{PE}
-                ,{EPSTTM}
-                ,{EarningsDate}
-                ,{ForwardDividend}
-                ,{DividendYield}
-                ,{ExDividendDate}
-                ,{RecommendationRating}
-                ,{NumberOfAnalystOpinions}
-                ,{ReturnOnAssets}
-                ,{TargetLowPrice}
-                ,{TargetHighPrice}
-                ,{PayoutRatio}
-                ,NULL
-                ,(SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
-                ,(SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))"
-
-
-
-
+                //jeżeli rynek jest zamknięty i istnieje rekord TICKER_HISTORY, update TICKER_HISTORY, w przeciwnym wypadku insert
+                @"IF ((SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))) IS NOT NULL)
+                BEGIN
+                    IF (EXISTS (SELECT 1 FROM TICKER_HISTORY WHERE TickerGF = (SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}') 
+                            AND TradingDay = (SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))))
+                        UPDATE TICKER_HISTORY SET 
+                        Price = {Price}
+                        ,PriceOpen = {PriceOpen}
+                        ,PriceClose = {PriceClose}
+                        ,PreviousClose = {PreviousClose}
+                        ,TargetEst1y = {TargetEst1y}
+                        ,MarketState = {MarketState}
+                        ,Week52RangeLow = {Week52RangeLow}
+                        ,Week52RangeHigh = {Week52RangeHigh}
+                        ,Volume = {Volume}
+                        ,AvgVolume = {AvgVolume}
+                        ,RecommendationRating = {RecommendationRating}
+                        ,Beta = {Beta}
+                        ,PE = {PE}
+                        ,EPSTTM = {EPSTTM}
+                        ,EarningsDate = {EarningsDate}
+                        ,ForwardDividend = {ForwardDividend}
+                        ,DividendYield = {DividendYield}
+                        ,ExDividendDate = {ExDividendDate}
+                        ,DayRangeLow = {DayRangeLow}
+                        ,DayRangeHigh = {DayRangeHigh}
+                        ,TargetHighPrice = {TargetHighPrice}
+                        ,TargetLowPrice = {TargetLowPrice}
+                        ,ReturnOnAssets = {ReturnOnAssets}
+                        ,NumberOfAnalystOpinions = {NumberOfAnalystOpinions}
+                        ,PayoutRatio = {PayoutRatio}
+                        ,UpdateDate = GETUTCDATE() 
+                        WHERE TickerGF = (SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')
+                            AND TradingDay = (SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
+                    ELSE
+                        INSERT INTO TICKER_HISTORY 
+                        (Price
+                        ,PriceOpen
+                        ,PriceClose
+                        ,MarketState
+                        ,PreviousClose
+                        ,TargetEst1y
+                        ,Week52RangeLow
+                        ,Week52RangeHigh
+                        ,DayRangeLow
+                        ,DayRangeHigh
+                        ,Volume
+                        ,AvgVolume
+                        ,MarketCapMnUSD
+                        ,Beta
+                        ,PE
+                        ,EPSTTM
+                        ,EarningsDate
+                        ,ForwardDividend
+                        ,DividendYield
+                        ,ExDividendDate
+                        ,RecommendationRating
+                        ,NumberOfAnalystOpinions
+                        ,ReturnOnAssets
+                        ,TargetLowPrice
+                        ,TargetHighPrice
+                        ,PayoutRatio
+                        ,UpdateDate
+                        ,TradingDay
+                        ,TickerGF)
+                        VALUES 
+                        ({Price}
+                        ,{PriceOpen}
+                        ,{PriceClose}
+                        ,{MarketState}
+                        ,{PreviousClose}
+                        ,{TargetEst1y}
+                        ,{Week52RangeLow}
+                        ,{Week52RangeHigh}
+                        ,{DayRangeLow}
+                        ,{DayRangeHigh}
+                        ,{Volume}
+                        ,{AvgVolume}
+                        ,{MarketCapMnUSD}
+                        ,{Beta}
+                        ,{PE}
+                        ,{EPSTTM}
+                        ,{EarningsDate}
+                        ,{ForwardDividend}
+                        ,{DividendYield}
+                        ,{ExDividendDate}
+                        ,{RecommendationRating}
+                        ,{NumberOfAnalystOpinions}
+                        ,{ReturnOnAssets}
+                        ,{TargetLowPrice}
+                        ,{TargetHighPrice}
+                        ,{PayoutRatio}
+                        ,NULL
+                        ,(SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
+                        ,(SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))
+                END"
             };
 
 

@@ -80,7 +80,7 @@ namespace MarketScreener
         public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out bool success)
         {
             if (Log.DebugEnabled)
-                Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute:\n", query));
+                Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute:\n", query[..Math.Min(250, query.Length)]));
 
             try
             {
@@ -91,6 +91,8 @@ namespace MarketScreener
                     connection.Open();
                     int rows = command.ExecuteNonQuery();
                     success = true;
+                    if (Log.DebugEnabled)
+                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, execution successful, ", rows.ToString(), " row affected."));
                     return rows;
                 }
             }
@@ -113,6 +115,9 @@ namespace MarketScreener
                 return -1;
 
             }
+
+            
+
         }
 
     }

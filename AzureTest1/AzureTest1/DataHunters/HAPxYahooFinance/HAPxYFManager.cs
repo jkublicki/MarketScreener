@@ -31,8 +31,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             string query = String.Concat("SELECT TOP ", BatchSize.ToString(), " TickerYF ",
                 "FROM ENU_TICKER ET JOIN ENU_MARKET EM ON ET.MarketCodeGF = EM.MarketCodeGF ",
                 "LEFT JOIN ENU_HOLIDAY EH ON EM.MarketCodeGF = EH.MarketCodeGF AND EH.HolidayDay = CAST(GETUTCDATE() AS date) ",
-                "WHERE ET.TickerYF IS NOT NULL AND (ET.UpdateDate IS NULL OR CAST(ET.UpdateDate AS date) < CAST(GETUTCDATE() AS date)) ",
-                "AND EH.HolidayDay IS NULL ");
+                "WHERE ET.TickerYF IS NOT NULL AND (ET.UpdateDate IS NULL OR CAST(ET.UpdateDate AS date) < CAST(GETUTCDATE() AS date)) ");
+                //"AND EH.HolidayDay IS NULL ");
 
             if (skipOpenMarkets)
             {
@@ -78,8 +78,13 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
                 Log.Entry(String.Concat("Tickers: ", String.Join(", ", tickers)));
 
             //HAPxYahooFinance.Service(tickers, TickerSleepMs);
-            new HAP.HAPDataExtractor().Extract(@"BAVA.CO", @"https://finance.yahoo.com/quote/BAVA.CO", new HAP.WebsiteStructure("CRAWL_1"));
 
+            if (tickers.Any())
+            {
+                string ticker = tickers.First();
+                new HAP.HAPDataExtractor().Extract(ticker, String.Concat(@"https://finance.yahoo.com/quote/", ticker), new HAP.WebsiteStructure("CRAWL_1"));
+                tickers.Remove(ticker);
+            }
 
             Status = DataHunterStatus.OFF;
 
