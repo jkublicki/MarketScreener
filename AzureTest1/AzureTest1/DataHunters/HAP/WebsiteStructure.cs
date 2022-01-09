@@ -394,6 +394,12 @@ namespace MarketScreener.DataHunters.HAP
 
             SQLStatements = new List<string>()
             {
+                //na wypadek problemów z pełnym update (np. przekroczna długość pola), aby ticker spadł do części kolejki dla zaktualizowanych dzisiaj
+                //bez sensu, nie rozwiązkuje problemu pustego url?
+                //ale taki problem nie wystąpi więcej niż raz na jedno pobranie tickerów
+                @"IF ((SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))) IS NOT NULL)
+                    UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '{UrlKey}'",
+
                 //jeżeli rynek jest zamknięty, update ENU_TICKER
                 @"IF ((SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))) IS NOT NULL)
                     UPDATE ENU_TICKER SET 

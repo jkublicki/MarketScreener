@@ -50,7 +50,7 @@ namespace MarketScreener
         private static void SetTimer()
         {
             // Create a timer with a two second interval.
-            triggerTimer = new System.Timers.Timer(timerIntervalMs);
+            triggerTimer = new System.Timers.Timer(20000);
             // Hook up the Elapsed event for the timer. 
             triggerTimer.Elapsed += OnTimerTick;
             triggerTimer.AutoReset = true;
@@ -73,11 +73,12 @@ namespace MarketScreener
 
 
                 //zmiana interwału powoduje reset odliczania czasu
-                triggerTimer.Interval = (int)Math.Floor(timerIntervalMs * (decimal)(new Random().NextDouble() * 0.05 + 1)); //unikanie powtarzalności
+                triggerTimer.Enabled = false;
+                triggerTimer.Interval = (int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1)); //unikanie powtarzalności
 
                 HAPxYFManager.Run();
                 
-                
+                triggerTimer.Enabled = true;
             }
                 
             else if (Log.Enabled)
