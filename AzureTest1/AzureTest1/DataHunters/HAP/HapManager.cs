@@ -27,6 +27,9 @@ namespace MarketScreener.DataHunters.HAP
                     }
                     else
                     {
+                        if (Log.Enabled) 
+                            Log.Entry(String.Concat(dataTable.Rows.Count.ToString(), " rows retrieved from url set ", planConfiguration.UrlSetName, "."));
+
                         foreach (DataRow row in dataTable.Rows)
                         {
                             if (!row.IsNull(0) && !row.IsNull(1))
@@ -73,8 +76,13 @@ namespace MarketScreener.DataHunters.HAP
                     waitTimeMs = (int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1));
                     lastServiceEndTime = DateTime.UtcNow;
                 }
-                //else pusty przebieg - taka paktyka jest ok?
+                //
             }
+
+            if (Log.Enabled)
+                Log.Entry(String.Concat("End of run. Url list count: ", urls.Count().ToString(), ", break signal: ",
+                    breakSingal.ToString(), ", run hours elapsed: ", (DateTime.UtcNow - runStartTime).TotalHours.ToString("0.000000"), "."));
+
         }
 
         public void BreakRun()
