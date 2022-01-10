@@ -529,7 +529,7 @@ namespace MarketScreener.DataHunters.HAP
                         ,{TargetLowPrice}
                         ,{TargetHighPrice}
                         ,{PayoutRatio}
-                        ,NULL
+                        ,GETUTCDATE() 
                         ,(SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
                         ,(SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))
                 END"
