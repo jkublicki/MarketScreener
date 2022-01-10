@@ -57,11 +57,23 @@ namespace MarketScreener.DataHunters.HAP
 
         public void Run()
         {
-            //tempshit, dodać timer
-            while (urls.Any() && !breakSingal)
+            DateTime runStartTime = DateTime.UtcNow;
+            DateTime lastServiceEndTime = DateTime.UtcNow.AddHours(-1);
+            int waitTimeMs = 4000;
+
+            Console.WriteLine("MarketScreener will be running for " + planConfiguration.RunDurationH.ToString() + " hours from " + runStartTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.");
+            if (Log.DebugEnabled) 
+                Console.WriteLine("Debug enabled");
+
+            while (urls.Any() && !breakSingal && (DateTime.UtcNow - runStartTime).TotalHours < planConfiguration.RunDurationH)
             {
-                Service();
-                Thread.Sleep((int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1)));
+                if ((DateTime.UtcNow - lastServiceEndTime).TotalMilliseconds > waitTimeMs)
+                {
+                    Service();
+                    waitTimeMs = (int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1));
+                    lastServiceEndTime = DateTime.UtcNow;
+                }
+                //else pusty przebieg - taka paktyka jest ok?
             }
         }
 
@@ -71,12 +83,12 @@ namespace MarketScreener.DataHunters.HAP
         }
 
         //TODO po 2022-01-09
-        //publiczna funkcja Run()
-        //w niej dla jednego z urls new HAP.HAPDataExtractor().Extract(..., ..., planConfigurtion.SiteStructure); 
-        //używa pierwszego url do góry i usuwa go z listy
-        //potem czeka a pomocą timera losowy czas, ok 1-4 s
-        //loguje początek i koniec run
-        //wymyślić jak zrobić manualne przerwanie, aby było pomiędzy extractami - nasłuch na event w Main()?
+        ////publiczna funkcja Run()
+        ////w niej dla jednego z urls new HAP.HAPDataExtractor().Extract(..., ..., planConfigurtion.SiteStructure); 
+        ////używa pierwszego url do góry i usuwa go z listy
+        ////potem czeka losowy czas, ok 1-4 s
+        ////loguje początek i koniec run
+        ////wymyślić jak zrobić manualne przerwanie, aby było pomiędzy extractami - nasłuch na event w Main()?
         //docelowo pobierać website structure z bazy - rozbudować PlanConfiguration.cs
         //czy ok że ten manager nie ma konstruktora??
         //z innej beczki - niech wywołanie tej aplikacji będzie co godzine na niecala godzine - na wypadek problemu z polaczeniem na etapie pobierania configa, bo to moze udupic całe działanie

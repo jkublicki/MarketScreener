@@ -22,7 +22,7 @@ namespace MarketScreener.DataHunters.HAP
             HtmlAgilityPack.HtmlWeb web = new(); //web nie potrzebuje dispose, zostawić to GC: https://github.com/zzzprojects/html-agility-pack/issues/370
             web.PreRequest = OnPreRequest;
 
-            if (Log.Enabled) Log.Entry("HAPDataExtractor.Extract() result:");
+            if (Log.Enabled) Log.Entry(String.Concat("HAPDataExtractor.Extract() result for ", urlKey, ":"));
 
             if (web == null)
             {
@@ -281,14 +281,11 @@ namespace MarketScreener.DataHunters.HAP
                 }
             }
 
-
-
             //zalogowanie zakończenia
             if (failCount == 0 && Log.Enabled)
-                Log.Entry("Complete without issues");
+                Log.Entry(String.Concat("Extraction complete without issues (", urlKey, ")"));
             else if (Log.Enabled) 
-                Log.Entry(String.Concat("Complete with issues listed above"));
-
+                Log.Entry(String.Concat("Extraction complete with issues listed above (", urlKey, ")"));
         }
     }
 }
