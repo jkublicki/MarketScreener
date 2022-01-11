@@ -46,6 +46,7 @@ namespace MarketScreener.DataHunters.HAP
         }
 
         private bool breakSingal = false;
+        Diagnostics diag = new();
 
         private void Service()
         {
@@ -54,7 +55,7 @@ namespace MarketScreener.DataHunters.HAP
                 (string, string) url = urls.First();
                 urls.Remove(url);
 
-                new HAP.HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure);
+                new HAP.HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure, ref diag);
             }
         }
 
@@ -62,27 +63,42 @@ namespace MarketScreener.DataHunters.HAP
         {
             DateTime runStartTime = DateTime.UtcNow;
             DateTime lastServiceEndTime = DateTime.UtcNow.AddHours(-1);
-            int waitTimeMs = 4000;
+            int waitTimeMs = 5000;
 
-            Console.WriteLine("MarketScreener will be running for " + planConfiguration.RunDurationH.ToString() + " hours from " + runStartTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.");
+            string consoleMessage = "MarketScreener will be running for " + planConfiguration.RunDurationH.ToString() + " hours from " + runStartTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.";
             if (Log.DebugEnabled) 
-                Console.WriteLine("Debug enabled");
+                consoleMessage += "\nDebug enabled";
+
+            Console.WriteLine(consoleMessage);
+
+            int count = 0;
 
             while (urls.Any() && !breakSingal && (DateTime.UtcNow - runStartTime).TotalHours < planConfiguration.RunDurationH)
             {
                 if ((DateTime.UtcNow - lastServiceEndTime).TotalMilliseconds > waitTimeMs)
                 {
                     Service();
-                    waitTimeMs = (int)Math.Floor(2000 * (decimal)(new Random().NextDouble() * 2.0 + 1));
+                    waitTimeMs = (int)Math.Floor(1667 * (decimal)(new Random().NextDouble() * 2.0 + 1)); //1667 oczekuję 10 url / min //dla 1333 byłem tymczasowo banowany
                     lastServiceEndTime = DateTime.UtcNow;
+
+                    count++;
+                    if (count % 10 == 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(consoleMessage + "\nDiagnostics:\n" + diag.Print());
+                    }
+                        
                 }
                 //
+                
             }
 
             if (Log.Enabled)
                 Log.Entry(String.Concat("End of run. Url list count: ", urls.Count().ToString(), ", break signal: ",
-                    breakSingal.ToString(), ", run hours elapsed: ", (DateTime.UtcNow - runStartTime).TotalHours.ToString("0.000000"), "."));
+                    breakSingal.ToString(), ", run hours elapsed: ", (DateTime.UtcNow - runStartTime).TotalHours.ToString("0.000000"), 
+                    ".\nDiagnostics:\n" + diag.Print()));
 
+            
         }
 
         public void BreakRun()

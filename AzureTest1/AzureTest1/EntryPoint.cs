@@ -28,7 +28,7 @@ namespace MarketScreener
 
         private static void SetTimer()
         {
-            triggerTimer = new System.Timers.Timer(1000);
+            triggerTimer = new System.Timers.Timer(500);
             triggerTimer.Elapsed += OnTimerTick;
             triggerTimer.AutoReset = true;
             triggerTimer.Enabled = true;

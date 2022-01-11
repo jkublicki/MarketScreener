@@ -185,7 +185,7 @@ namespace MarketScreener.DataHunters.HAP
             }
 
             //docelowo analogicznie jw. dla website structure i website elements
-
+            //dodatkowo min i max time dla randomowego czekania
 
 
         }
