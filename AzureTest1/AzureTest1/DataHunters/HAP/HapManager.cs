@@ -68,6 +68,12 @@ namespace MarketScreener.DataHunters.HAP
             string consoleMessage = "MarketScreener will be running for " + planConfiguration.RunDurationH.ToString() + " hours from " + runStartTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.";
             if (Log.DebugEnabled) 
                 consoleMessage += "\nDebug enabled";
+            
+            //debug - rynki w tym run; specyficzne dla HAP x Yahoo Finance, dla wygody - usunąć potem
+            //consoleMessage += ...
+            //coś w ten deseń
+            //mkt_code_list = url_key_list.Select(t => t.IndexOf('.') > 0 ? t.Split('.', StringSplitOptions.RemoveEmptyEntries).Last() : "nyse_nasdaq").Distinct().ToList();
+            
 
             Console.WriteLine(consoleMessage);
 
