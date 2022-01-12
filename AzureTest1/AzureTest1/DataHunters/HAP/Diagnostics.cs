@@ -32,13 +32,17 @@ namespace MarketScreener.DataHunters.HAP
         private DateTime startTime = DateTime.UtcNow;
         public TimeSpan TimeElapsed { get => DateTime.UtcNow - startTime; }
         public decimal Health { 
-            get => (DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount) >= 100 ? 
+            get => (DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount) >= 100 
+                && (DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount) > 0
+                && (FindElementFailsCount + ElementsFoundCount) > 0
+                && (FailedSQLStatementsCount + ExecutedSQLStatementsCount) > 0
+                ? 
                 ((decimal)LoadedUrlsCount / (DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount))
                 * ((decimal)ExecutedConversionsCount / (FindElementFailsCount + ElementsFoundCount))
                 * ((decimal)ExecutedSQLStatementsCount / (FailedSQLStatementsCount + ExecutedSQLStatementsCount))
                 : -1; 
         }
-        public decimal Speed { get => Math.Round((DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount) / (decimal)TimeElapsed.TotalMinutes, 2); }
+        public decimal Speed { get => (decimal)TimeElapsed.TotalMinutes > 0 ? Math.Round((DeadUrlCount + FailedUrlLoadsCount + LoadedUrlsCount) / (decimal)TimeElapsed.TotalMinutes, 2) : -1; }
 
         public string Print()
         {
