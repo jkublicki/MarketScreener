@@ -82,7 +82,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
             if (tickers.Any())
             {
                 string ticker = tickers.First();
-                HAP.Diagnostics tempshit = new();
+                HAP.HAPDiagnostics tempshit = new();
                 new HAP.HAPDataExtractor().Extract(ticker, String.Concat(@"https://finance.yahoo.com/quote/", ticker), new HAP.WebsiteStructure("CRAWL_1"), ref tempshit);
                 tickers.Remove(ticker);
             }

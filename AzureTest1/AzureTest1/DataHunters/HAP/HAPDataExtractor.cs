@@ -14,11 +14,8 @@ namespace MarketScreener.DataHunters.HAP
             return true;
         }
 
-        public void Extract(string urlKey, string url, WebsiteStructure websiteStructure, ref Diagnostics diagnostics)
+        public void Extract(string urlKey, string url, WebsiteStructure websiteStructure, ref HAPDiagnostics diagnostics)
         {
-            int failCount = 0;
-            int databaseFailCount = 0;
-
             HtmlAgilityPack.HtmlWeb web = new(); //web nie potrzebuje dispose, zostawić to GC: https://github.com/zzzprojects/html-agility-pack/issues/370
             web.PreRequest = OnPreRequest;
 
@@ -27,7 +24,6 @@ namespace MarketScreener.DataHunters.HAP
             if (web == null)
             {
                 if (Log.Enabled) Log.Entry("   HtmlAgilityPack.HtmlWeb() failed");
-                failCount++;
                 diagnostics.TechnicalFailsCount++;
 
                 return;
@@ -46,7 +42,6 @@ namespace MarketScreener.DataHunters.HAP
             {
                 if (Log.Enabled) Log.Entry(String.Concat("Skipping ticker ", urlKey, ", HtmlAgilityPack.HtmlWeb.Load() failed for url ", url,
                     ". Full exception: ", e.ToString(), ""));
-                failCount++;
                 diagnostics.FailedUrlLoadsCount++;
                 diagnostics.FailedUrlLoads.Add((urlKey, url));
                 //nie ma servie dead url, nadrzędna klasa odpowiada za to, żeby wywołać extract z danym url tylko raz
@@ -57,7 +52,6 @@ namespace MarketScreener.DataHunters.HAP
             if (doc == null || doc.Text == null || doc.Text.Length < 100)
             {
                 if (Log.Enabled) Log.Entry(String.Concat("  Skipping ticker ", urlKey, ", HtmlAgilityPack.HtmlWeb.Load() returned empty document from url ", url, ""));
-                failCount++;
                 diagnostics.DeadUrlCount++;
                 diagnostics.DeadUrls.Add((urlKey, url));    
                 //nie ma servie dead url, nadrzędna klasa odpowiada za to, żeby wywołać extract z danym url tylko raz
@@ -90,7 +84,6 @@ namespace MarketScreener.DataHunters.HAP
                         if (node == null)
                         {
                             if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed - node not found - for ", urlKey, ", node ", n.Name, ""));
-                            failCount++;
                             diagnostics.FindElementFailsCount++;
                         }
                         else
@@ -112,7 +105,6 @@ namespace MarketScreener.DataHunters.HAP
                                 else
                                 {
                                     if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (AttributeValue) failed - the node doesn't have a such attribute - for ", urlKey, ", ", n.Name, ""));
-                                    failCount++;
                                     diagnostics.ExtractDataFailsCount++;
                                 }
                             }
@@ -120,7 +112,6 @@ namespace MarketScreener.DataHunters.HAP
                             {
                                 if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (AttributeValue) failed - exception - for ", urlKey, ", ", n.Name, ""));
                                 if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
-                                failCount++;
                                 diagnostics.ExtractDataFailsCount++;
                             }
                         }
@@ -137,7 +128,6 @@ namespace MarketScreener.DataHunters.HAP
                                 else
                                 {
                                     if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerText) failed - InnerText is null - for ", urlKey, ", ", n.Name, ""));
-                                    failCount++;
                                     diagnostics.ExtractDataFailsCount++;
                                 }
                             }
@@ -145,7 +135,6 @@ namespace MarketScreener.DataHunters.HAP
                             {
                                 if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerText) failed - exception - for ", urlKey, ", ", n.Name, ""));
                                 if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
-                                failCount++;
                                 diagnostics.ExtractDataFailsCount++;
                             }
                         }
@@ -162,7 +151,6 @@ namespace MarketScreener.DataHunters.HAP
                                 else
                                 {
                                     if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerHtml) failed - InnerHtml is null - for ", urlKey, ", ", n.Name, ""));
-                                    failCount++;
                                     diagnostics.ExtractDataFailsCount++;
                                 }
                             }
@@ -170,7 +158,6 @@ namespace MarketScreener.DataHunters.HAP
                             {
                                 if (Log.Enabled) Log.Entry(String.Concat("   Value acquisition (InnerHtml) failed - exception - for ", urlKey, ", ", n.Name, ""));
                                 if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
-                                failCount++;
                                 diagnostics.ExtractDataFailsCount++;
                             }
                         }
@@ -183,7 +170,6 @@ namespace MarketScreener.DataHunters.HAP
                     {
                         if (Log.Enabled) Log.Entry(String.Concat("  XPATH select failed - exception - for ", urlKey, ", node ", n.Name, ""));
                         if (Log.Enabled && Log.DebugEnabled) Log.Entry(e.ToString());
-                        failCount++;
                         diagnostics.FindElementFailsCount++;
                     }
                 }
@@ -222,7 +208,6 @@ namespace MarketScreener.DataHunters.HAP
                     if (!success)
                     {
                         if (Log.Enabled) Log.Entry(String.Concat("  Text search failed for ", urlKey, ", node ", n.Name, ""));
-                        failCount++;
                         diagnostics.FindElementFailsCount++;
                         //diagnostics.ExtractDataFailsCount++;
                     }
@@ -247,7 +232,6 @@ namespace MarketScreener.DataHunters.HAP
                     else
                     {
                         if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", dataField.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", urlKey, ""));
-                        failCount++;
                         diagnostics.FailedConversionsCount++;
                         diagnostics.FailedConversions.Add((dataField.Value, n.ConverterFunction));
 
@@ -311,8 +295,7 @@ namespace MarketScreener.DataHunters.HAP
                     int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out bool _);
                     if (insertedRows == -1)
                     {
-                        failCount++;
-                        databaseFailCount++;
+                        diagnostics.FailedSQLStatementsCount++;
                         diagnostics.FailedSQLStatements.Add((query, DateTime.UtcNow));
                     }
                     else

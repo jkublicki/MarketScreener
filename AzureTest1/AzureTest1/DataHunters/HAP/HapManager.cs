@@ -46,7 +46,7 @@ namespace MarketScreener.DataHunters.HAP
         }
 
         private bool breakSingal = false;
-        Diagnostics diag = new();
+        HAPDiagnostics diag = new();
 
         private void Service()
         {

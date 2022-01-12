@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MarketScreener.DataHunters.HAP
 {
-    internal class Diagnostics
+    internal class HAPDiagnostics
     {
         public int DeadUrlCount = 0;
         public List<(string, string)> DeadUrls = new();
