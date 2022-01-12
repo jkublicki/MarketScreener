@@ -77,22 +77,46 @@ namespace MarketScreener
             return rows;
         }
 
-        public static int ExecuteSQLStatement(string connectionString, string query, bool throwError, out bool success)
+        public static List<int> ExecuteSQLStatementNQ(string connectionString, List<string> queries, bool throwError, out bool success)
         {
-            if (Log.DebugEnabled)
-                Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute:\n", query[..Math.Min(250, query.Length)]));
+            if (!queries.Any())
+            {
+                string msg = "ExecuteSQLStatement(), NonQuery variant, called with empty list of queries. Run stopped.";
+                success = false;
+                Log.Entry(msg);
+                throw new Exception(msg);
+            }
 
+            if (Log.DebugEnabled)
+                Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute queries:\n",
+                    String.Join("\n", queries.Select(q => q[..Math.Min(200, q.Length)]))));                    
+
+            List<int> rows = new ();
+            string lastQuery = "";
+            
             try
             {
+                lastQuery = queries[0];
+
                 SqlConnection connection = new(connectionString);
+                connection.Open();
+
                 using (connection)
                 {
-                    using SqlCommand command = new(query, connection);
-                    connection.Open();
-                    int rows = command.ExecuteNonQuery();
-                    success = true;
-                    if (Log.DebugEnabled)
-                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, execution successful, ", rows.ToString(), " row affected."));
+                    foreach (string query in queries)
+                    {
+                        lastQuery = query;
+                        using SqlCommand command = new(query, connection);
+                        
+                        int r = command.ExecuteNonQuery();
+                        rows.Add(r);                     
+                        if (Log.DebugEnabled)
+                            Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatementNQ() execution successful, ", r.ToString(), " row affected."));                        
+                    }
+                    if (rows.Any(r => r == -1))
+                        success = false;
+                    else
+                        success = true;
                     return rows;
                 }
             }
@@ -103,17 +127,21 @@ namespace MarketScreener
                 success = false;
 
                 if (Log.Enabled)
-                    Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed:\n  Query: ", query, "\n  Message:", e.Message));
+                    Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatementNQ() failed:\n  Query: ", lastQuery, "\n  Message:", e.Message));
 
                 if (Log.DebugEnabled)
-                    Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatement():\n", e.ToString()));
+                    Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatementNQ():\n", e.ToString()));
 
                 if (throwError)
                 {
                     throw e;
                 }
-                return -1;
-
+                
+                while (rows.Count() < queries.Count())
+                {
+                    rows.Add(-1);
+                }
+                return rows;
             }
 
             

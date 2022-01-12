@@ -290,13 +290,14 @@ namespace MarketScreener.DataHunters.HAP
 
             if (!HAPSettings.SkipDataExtraction)
             {
-                foreach (string query in statements)
+                List<int> insertedRowsList = QueryDatabase.ExecuteSQLStatementNQ(Secrets.ConnectionString, statements, false, out bool _);
+
+                for (int i = 0; i < insertedRowsList.Count; i++)
                 {
-                    int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out bool _);
-                    if (insertedRows == -1)
+                    if (insertedRowsList[i] == -1)
                     {
                         diagnostics.FailedSQLStatementsCount++;
-                        diagnostics.FailedSQLStatements.Add((query, DateTime.UtcNow));
+                        diagnostics.FailedSQLStatements.Add((statements[i], DateTime.UtcNow));
                     }
                     else
                         diagnostics.ExecutedSQLStatementsCount++;

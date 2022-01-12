@@ -44,8 +44,8 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
         private static void ServiceDeadUrl(string ticker)
         {
-            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, String.Concat(
-                "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '", ticker, "'"), false, out bool _) == -1)
+            if (QueryDatabase.ExecuteSQLStatementNQ(Secrets.ConnectionString, new() { String.Concat(
+                "UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '", ticker, "'") }, false, out bool _)[0] == -1)
                 Log.Entry(String.Concat("HAPxYahooFinance.Service() can't service and can't update ", ticker));
         }
 
@@ -305,14 +305,14 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                     if (!skipDataExtraction)
                     {   
-                        int updatedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, updateSQL, false, out bool _);
+                        int updatedRows = QueryDatabase.ExecuteSQLStatementNQ(Secrets.ConnectionString, new() { updateSQL }, false, out bool _)[0];
                         if (updatedRows == -1)
                         {
                             failCount++;
                             databaseFailCount++;
                             
                             string quickUpdateSQL = String.Concat("UPDATE ENU_TICKER SET UpdateDate = GETUTCDATE() WHERE TickerYF = '", t, "'"); //na wypadek faila normalnego update, żeby ticker nie wracał                                                                                                                                                    
-                            if (QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, quickUpdateSQL, false, out bool _) == -1)
+                            if (QueryDatabase.ExecuteSQLStatementNQ(Secrets.ConnectionString, new() { quickUpdateSQL }, false, out bool _)[0] == -1)
                             {
                                 failCount++;
                                 databaseFailCount++;
@@ -321,7 +321,7 @@ namespace MarketScreener.DataHunters.HAPxYahooFinance
 
                         }
 
-                        int insertedRows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, insertSQL, false, out bool _);
+                        int insertedRows = QueryDatabase.ExecuteSQLStatementNQ(Secrets.ConnectionString, new() { insertSQL }, false, out bool _)[0];
                         if (insertedRows == -1)
                         {
                             failCount++;

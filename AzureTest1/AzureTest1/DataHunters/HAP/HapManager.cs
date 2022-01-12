@@ -69,10 +69,11 @@ namespace MarketScreener.DataHunters.HAP
             if (Log.DebugEnabled) 
                 consoleMessage += "\nDebug enabled";
             
-            //debug - rynki w tym run; specyficzne dla HAP x Yahoo Finance, dla wygody - usunąć potem
-            //consoleMessage += ...
-            //coś w ten deseń
-            //mkt_code_list = url_key_list.Select(t => t.IndexOf('.') > 0 ? t.Split('.', StringSplitOptions.RemoveEmptyEntries).Last() : "nyse_nasdaq").Distinct().ToList();
+            //debug do usunięcia, specyficzny dla planu i ogólnie brzydki - rynki w tym run
+            consoleMessage += "\n--HAPxYF debug, markets: " 
+                + String.Join(", ", urls.Select(t => 
+                t.Item1.IndexOf('.') > 0 ? 
+                t.Item1.Split('.', StringSplitOptions.RemoveEmptyEntries).Last() : "nyse_nasdaq").Distinct().Except(new List<string>() { "A", "B"}).ToList());
             
 
             Console.WriteLine(consoleMessage);
@@ -88,7 +89,7 @@ namespace MarketScreener.DataHunters.HAP
                     lastServiceEndTime = DateTime.UtcNow;
 
                     count++;
-                    if (count % 10 == 0)
+                    if (count % 5 == 0) //właściwe jest 8? im dłużej, tym gorzej przy sql fail, ale nie przerwie wpisywania STOP
                     {
                         Console.Clear();
                         Console.WriteLine(consoleMessage + "\nDiagnostics:\n" + diag.Print());
