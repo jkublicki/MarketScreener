@@ -4,6 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//wygląda na to, że jest problem z dynamicznym contentem
+//https://html-agility-pack.net/knowledge-base/10169484/htmlagilitypack-and-dynamic-content-issue
+//https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.webbrowser.readystate?view=windowsdesktop-6.0
+//https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.webbrowserreadystate?view=windowsdesktop-6.0
+//https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.webbrowser?view=windowsdesktop-6.0
+//https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.webbrowser.isbusy?view=windowsdesktop-6.0#system-windows-forms-webbrowser-isbusy
+//może kilka razy load i porównywać?
+//może zapisywać strony w momencie pobrania
+////dodać zakaż używania cache
+//generalnie 13.01 o 10:37 PL YF wyświetla dane dla TROW, ZNGA za 10.01 !!!! - da się to rozpoznać po "At close: January 10 04:00PM EST" pod ceną
+
 namespace MarketScreener.DataHunters.HAP
 {
     internal class HAPDataExtractor
@@ -18,6 +29,7 @@ namespace MarketScreener.DataHunters.HAP
         {
             HtmlAgilityPack.HtmlWeb web = new(); //web nie potrzebuje dispose, zostawić to GC: https://github.com/zzzprojects/html-agility-pack/issues/370
             web.PreRequest = OnPreRequest;
+            web.UsingCache = false;
 
             if (Log.Enabled) Log.Entry(String.Concat("HAPDataExtractor.Extract() result for ", urlKey, ":"));
 
@@ -62,7 +74,8 @@ namespace MarketScreener.DataHunters.HAP
             diagnostics.LoadedUrlsCount++;
 
             //debug
-            if (Log.DebugEnabled)
+            //tymczasowo włączone zapisywanie do czasu wyjaśnienia problemów z błędnymi danymi
+            //if (Log.DebugEnabled)
                 doc.Save("doc_" + urlKey + ".txt");
 
 
