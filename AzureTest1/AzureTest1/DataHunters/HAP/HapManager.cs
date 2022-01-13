@@ -85,7 +85,18 @@ namespace MarketScreener.DataHunters.HAP
                 if ((DateTime.UtcNow - lastServiceEndTime).TotalMilliseconds > waitTimeMs)
                 {
                     Service();
-                    waitTimeMs = (int)Math.Floor(1667 * (decimal)(new Random().NextDouble() * 2.0 + 1)); //1667 oczekuję 10 url / min //dla 1333 byłem tymczasowo banowany
+
+                    //dla 1667 odpala się mechanizm obronny YF
+                    //dla 3334 * (R * 2.0 + 1) YF się nie bronił, próbka 88 stron; bronił po próbce 157 stron
+                    //dla 3334 * (R * 0.5 + 1) YF się bronił, próbka 41
+                    //dla 2700 * (R * 2.0 + 1) YF się bronił, próbka 94
+                    //dla 2500 * { 10%: R * 2 + 20, 90%: R * 2 + 1 YF się bronił, próbka 77
+                    //dla 3000 * { 15%: R * 2 + 20, 85%: R * 2 + 1 YF się nie bronił dla próbki 201; <= TO JEST OK DLA YF, NIE RUSZAĆ!
+
+                    Random r = new Random();
+
+                    waitTimeMs = (int)Math.Floor(3000 * ((decimal)(r.NextDouble() > 0.15 ? (r.NextDouble() * 2.0 + 1) : (r.NextDouble() * 2.0 + 20))));
+
                     lastServiceEndTime = DateTime.UtcNow;
 
                     count++;

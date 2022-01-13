@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 ////dodać zakaż używania cache
 //generalnie 13.01 o 10:37 PL YF wyświetla dane dla TROW, ZNGA za 10.01 !!!! - da się to rozpoznać po "At close: January 10 04:00PM EST" pod ceną
 
+//usunąć z website element columnname i tablename, nie są używane
+
 namespace MarketScreener.DataHunters.HAP
 {
     internal class HAPDataExtractor
@@ -30,6 +32,7 @@ namespace MarketScreener.DataHunters.HAP
             HtmlAgilityPack.HtmlWeb web = new(); //web nie potrzebuje dispose, zostawić to GC: https://github.com/zzzprojects/html-agility-pack/issues/370
             web.PreRequest = OnPreRequest;
             web.UsingCache = false;
+            web.UseCookies = false;
 
             if (Log.Enabled) Log.Entry(String.Concat("HAPDataExtractor.Extract() result for ", urlKey, ":"));
 

@@ -65,7 +65,7 @@ namespace MarketScreener.DataHunters.HAP
                     ColumnName = "MarketState",
                     Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
-                    ExtraParam = @"open|close" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
+                    //ExtraParam = @"open|close" //chcę zapisać całę market state dla sprawdzenia samoobrony YF
                 },
                 new WebsiteElement()
                 {
@@ -434,7 +434,7 @@ namespace MarketScreener.DataHunters.HAP
                     ,ReturnOnAssets = {ReturnOnAssets}
                     ,NumberOfAnalystOpinions = {NumberOfAnalystOpinions}
                     ,PayoutRatio = {PayoutRatio}
-                    ,UpdateDate = GETUTCDATE() 
+                    ,UpdateDate = GETUTCDATE()
                     WHERE TickerYF = '{UrlKey}'",
 
                 //jeżeli rynek jest zamknięty i istnieje rekord TICKER_HISTORY, update TICKER_HISTORY, w przeciwnym wypadku insert
@@ -468,7 +468,7 @@ namespace MarketScreener.DataHunters.HAP
                         ,ReturnOnAssets = {ReturnOnAssets}
                         ,NumberOfAnalystOpinions = {NumberOfAnalystOpinions}
                         ,PayoutRatio = {PayoutRatio}
-                        ,UpdateDate = GETUTCDATE() 
+                        ,UpdateDate = GETUTCDATE()
                         WHERE TickerGF = (SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')
                             AND TradingDay = (SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
                     ELSE
@@ -531,7 +531,8 @@ namespace MarketScreener.DataHunters.HAP
                         ,{PayoutRatio}
                         ,GETUTCDATE() 
                         ,(SELECT dbo.ReadTimeToTradingDay (GETUTCDATE(), (SELECT TOP 1 MarketCodeGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')))
-                        ,(SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}'))
+                        ,(SELECT TOP 1 TickerGF FROM ENU_TICKER WHERE TickerYF = '{UrlKey}')
+                        )
                 END"
             };
 
