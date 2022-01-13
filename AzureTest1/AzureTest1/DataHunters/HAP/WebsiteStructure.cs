@@ -26,8 +26,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]",
                     DataLocation = WebsiteElement.DataLocations.AttributeValue,
-                    ColumnName = "Price",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -38,8 +36,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]", //Price = PriceClose, bo obsługuję tylko zamknięte rynki
                     DataLocation = WebsiteElement.DataLocations.AttributeValue,
-                    ColumnName = "PriceClose",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -50,8 +46,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='OPEN-value']",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "PriceOpen",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -62,8 +56,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@id='quote-market-notice']/span",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "MarketState",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
                     //ExtraParam = @"open|close" //chcę zapisać całę market state dla sprawdzenia samoobrony YF
                 },
@@ -74,8 +66,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[2]/div[1]/div[2]/span",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "Currency",
-                    Tables = new List<string>() { "ENU_TICKER" },
                     ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
                     ExtraParam = @"([A-z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                 },
@@ -86,8 +76,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@id='quote-header-info']/div[2]/div[1]/div[1]/h1/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "CompanyName",
-                    Tables = new List<string>() { "ENU_TICKER" },
                     ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
                     ExtraParam = @".+?(?= \()"
                 },
@@ -98,8 +86,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "PreviousClose",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -111,8 +97,6 @@ namespace MarketScreener.DataHunters.HAP
                     //XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[8]/td[2]", //też działa
                     XPATH = "//*[@data-test='ONE_YEAR_TARGET_PRICE-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "TargetEst1y",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -123,8 +107,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "Week52RangeLow",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
@@ -135,8 +117,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "Week52RangeHigh",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
@@ -147,8 +127,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "DayRangeLow",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
@@ -159,8 +137,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "DayRangeHigh",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
@@ -171,8 +147,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/fin-streamer",
                     DataLocation = WebsiteElement.DataLocations.InnerHtml,
-                    ColumnName = "Volume",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
@@ -183,8 +157,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[8]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "AvgVolume",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
@@ -195,8 +167,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[1]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "MarketCapMnUSD",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.YFMarketCapToMillion,
                     ExtraParam = "0.0"
                 },
@@ -207,8 +177,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='BETA_5Y-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "Beta",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
                 },
                 new WebsiteElement()
@@ -218,8 +186,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='PE_RATIO-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "PE",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
                 },
                 new WebsiteElement()
@@ -229,8 +195,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EPS_RATIO-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "EPSTTM",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal
                 },
                 new WebsiteElement()
@@ -240,8 +204,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EARNINGS_DATE-value']/span/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "EarningsDate",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDate
                 },
                 new WebsiteElement()
@@ -251,8 +213,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='DIVIDEND_AND_YIELD-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "ForwardDividend",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
@@ -263,8 +223,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='DIVIDEND_AND_YIELD-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "DividendYield",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
@@ -275,8 +233,6 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EX_DIVIDEND_DATE-value']/span/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ColumnName = "ExDividendDate",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDate
                 },
 
@@ -288,9 +244,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "sector\":\"",
                     SearchElementBeforeLeft = "summaryProfile",
                     LeftSEMaxDistance = 40,
+                    RightSEMaxDistance = 40,
                     SearchElementRight = "\",\"",
-                    ColumnName = "GICSSector",
-                    Tables = new List<string>() { "ENU_TICKER" },
                     ConverterFunction = StringConverters.ConvertingFunctions.GICSSector
                 },
                 new WebsiteElement()
@@ -301,9 +256,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "recommendationMean",
                     LeftSEMaxDistance = 25,
+                    RightSEMaxDistance = 25,
                     SearchElementRight = ",\"",
-                    ColumnName = "RecommendationRating", //rec-rating-txt
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.99"
                 },
@@ -315,9 +269,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "AnalystOpinions",
                     LeftSEMaxDistance = 20,
+                    RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ColumnName = "NumberOfAnalystOpinions", //rec-rating-txt
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
@@ -329,9 +282,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "returnOnAssets\":", //tu nie może być verbatim string literal, czyli @; YF podaje RoA 5% jako 0.05
                     LeftSEMaxDistance = 20,
+                    RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ColumnName = "ReturnOnAssets",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal
                 },
                 new WebsiteElement()
@@ -342,9 +294,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "targetLowPrice",
                     LeftSEMaxDistance = 20,
+                    RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ColumnName = "TargetLowPrice",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -356,9 +307,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "targetHighPrice",
                     LeftSEMaxDistance = 20,
+                    RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ColumnName = "TargetHighPrice",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
@@ -370,9 +320,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = ",\"country\":\"",
                     SearchElementBeforeLeft = ",\"phone\":",
                     LeftSEMaxDistance = 40,
+                    RightSEMaxDistance = 40,
                     SearchElementRight = "\",",
-                    ColumnName = "CountryName",
-                    Tables = new List<string>() { "ENU_TICKER" },
                     ConverterFunction = StringConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
                     ExtraParam = @"^.{1,25}"
                 },
@@ -384,9 +333,8 @@ namespace MarketScreener.DataHunters.HAP
                     SearchElementLeft = "raw\":",
                     SearchElementBeforeLeft = "payoutRatio\":{",
                     LeftSEMaxDistance = 20,
+                    RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ColumnName = "PayoutRatio",
-                    Tables = new List<string>() { "ENU_TICKER", "TICKER_HISTORY" },
                     ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 }

@@ -16,10 +16,9 @@ namespace MarketScreener.DataHunters.HAP
         public string? SearchElementBeforeLeft; //jn. poprzedzający SearchElementLeft
         public string? SearchElementLeft; //charakterystyczny stały tekst poprzedzający dane, tylko dla DOCTEXT
         public int? LeftSEMaxDistance;
+        public int? RightSEMaxDistance;
         public string? SearchElementRight; //jw. występujący po danych
         public StringConverters.ConvertingFunctions ConverterFunction;
-        public string ColumnName = "";
-        public List<string> Tables = new(); //zakładając, że update wielu tabel, ale tabele mają tak samo nazwane kolumny odpowiadające temu punktowi danych
         public string? ExtraParam; //parametr, zastosowanie specyficzne dla konwertera: varchar - regex, liczbowe - dolny limit (nieakceptowana wartość)
 
 

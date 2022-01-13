@@ -203,7 +203,7 @@ namespace MarketScreener.DataHunters.HAP
                         {
                             int idxEnd = docText.IndexOf(n.SearchElementRight, idxBeg + n.SearchElementLeft.Length);
 
-                            if (idxEnd != -1 && idxEnd - idxBeg < n.LeftSEMaxDistance)
+                            if (idxEnd != -1 && idxEnd - idxBeg < n.RightSEMaxDistance)
                             {
                                 string dataPoint = docText.Substring(idxBeg + n.SearchElementLeft.Length, idxEnd - (idxBeg + n.SearchElementLeft.Length));
                                 dataField.Value = dataPoint;
