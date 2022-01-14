@@ -310,7 +310,53 @@ namespace MarketScreener.DataHunters.HAP
                     throw new Exception("RunConfiguration: no rows or wrong number of columns retrieved from MS_CFG_WEBSITE_ELEMENT.");
             }
 
+
+            string query7 = "SELECT Query FROM MS_CFG_WEBSITE_QUERY WHERE PlanName = (SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1) ORDER BY OrderIndex";
+            int rows7 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query7, false, out DataTable? dataTable7);
+            if (rows7 == -1 || dataTable7 == null)
+            {
+                Log.Entry("Failed to read from MS_CFG_WEBSITE_QUERY. Run aborted.");
+                Environment.Exit(1);
+                return;
+            }
+            else
+            {
+                List<string> statements = new();
+
+                if (dataTable7.Rows.Count > 0 && dataTable7.Rows[0].ItemArray.Count() == 1)
+                {
+                    
+
+                    foreach (DataRow row in dataTable7.Rows)
+                    {
+                        if (row["Query"] != null && !row.IsNull("Query"))
+                            statements.Add(row["Query"].ToString());
+                        else
+                        {
+                            Log.Entry("Empty query in MS_CFG_WEBSITE_QUERY. Run aborted.");
+                            Environment.Exit(1);
+                            return;
+                        }
+
+                    }
+                }
+                else
+                {
+                    Log.Entry("No rows returned from MS_CFG_WEBSITE_QUERY or too many columns. Run aborted.");
+                    Environment.Exit(1);
+                    return;
+                }
+
+                siteStructure.SQLStatements = statements;
+            }
         }
 
     }
 }
+
+
+/*
+ * cała ta metoda to abominacja, a walidacje sa krzywe i pewnie dziurawe - do przegladu na spokojnie
+ * 
+ * 
+ */
