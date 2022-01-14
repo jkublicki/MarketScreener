@@ -40,5 +40,6 @@ namespace MarketScreener
             if (line == "STOP")
                 manager.BreakRun();            
         }
+
     }
 }

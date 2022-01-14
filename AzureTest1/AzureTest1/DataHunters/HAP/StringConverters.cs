@@ -27,6 +27,18 @@ namespace MarketScreener.DataHunters.HAP
             GICSSector
         }
 
+        public static Dictionary<string, ConvertingFunctions> StringConvertingFunctions = new()
+        {
+            { "EvalDecimal", ConvertingFunctions.EvalDecimal },
+            { "EvalInt", ConvertingFunctions.EvalInt },
+            { "DecimalRangeLeft", ConvertingFunctions.DecimalRangeLeft },
+            { "DecimalRangeRight", ConvertingFunctions.DecimalRangeRight },
+            { "Varchar50", ConvertingFunctions.Varchar50 },
+            { "EvalDate", ConvertingFunctions.EvalDate },
+            { "YFMarketCapToMillion", ConvertingFunctions.YFMarketCapToMillion },
+            { "GICSSector", ConvertingFunctions.GICSSector }
+        };
+
 
         public static string ConvertValue(string? value, ConvertingFunctions converter, string? extraParam, out bool success)
         {

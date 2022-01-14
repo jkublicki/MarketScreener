@@ -11,10 +11,9 @@ namespace MarketScreener.DataHunters.HAP
         public List<WebsiteElement> WebsiteElements = new();
         public List<string> SQLStatements = new(); //To execute after data extraction
 
+        /*
         public WebsiteStructure(string name)
         {
-            //name - klucz zapisanego w bazie scenariusza przetachlowania grupy podstron o identycznej strukturze
-            //docelowo: odczyt z bazy,przepisanie z data tables do atrybutów (uważając na nulle w DB), walidacja ze szczegółową instrukcją co poprawić
 
 
             WebsiteElements = new List<WebsiteElement>()
@@ -26,7 +25,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]",
                     DataLocation = WebsiteElement.DataLocations.AttributeValue,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -36,7 +35,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[3]/div[1]/div/fin-streamer[1]", //Price = PriceClose, bo obsługuję tylko zamknięte rynki
                     DataLocation = WebsiteElement.DataLocations.AttributeValue,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -46,7 +45,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='OPEN-value']",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -56,7 +55,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@id='quote-market-notice']/span",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.Varchar50,
                     //ExtraParam = @"open|close" //chcę zapisać całę market state dla sprawdzenia samoobrony YF
                 },
                 new WebsiteElement()
@@ -66,7 +65,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div/div/div[2]/div[1]/div[2]/span",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.Varchar50,
                     ExtraParam = @"([A-z]{3})\s*$" //@ powoduje, że znak specjalny \ jest traktowany jak zwykły; regex do ostatnich 3 znaków
                 },
                 new WebsiteElement()
@@ -76,7 +75,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@id='quote-header-info']/div[2]/div[1]/div[1]/h1/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.Varchar50,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.Varchar50,
                     ExtraParam = @".+?(?= \()"
                 },
                 new WebsiteElement()
@@ -86,7 +85,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -97,7 +96,7 @@ namespace MarketScreener.DataHunters.HAP
                     //XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[8]/td[2]", //też działa
                     XPATH = "//*[@data-test='ONE_YEAR_TARGET_PRICE-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -107,7 +106,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -117,7 +116,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -127,7 +126,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -137,7 +136,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -147,7 +146,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/fin-streamer",
                     DataLocation = WebsiteElement.DataLocations.InnerHtml,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -157,7 +156,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[8]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -167,7 +166,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[2]/table/tbody/tr[1]/td[2]",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.YFMarketCapToMillion,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.YFMarketCapToMillion,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -177,7 +176,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='BETA_5Y-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal //beta może być ujemna
                 },
                 new WebsiteElement()
                 {
@@ -186,7 +185,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='PE_RATIO-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal //PE może być ujemne
                 },
                 new WebsiteElement()
                 {
@@ -195,7 +194,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EPS_RATIO-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal
                 },
                 new WebsiteElement()
                 {
@@ -204,7 +203,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EARNINGS_DATE-value']/span/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDate
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDate
                 },
                 new WebsiteElement()
                 {
@@ -213,7 +212,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='DIVIDEND_AND_YIELD-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeLeft,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -223,7 +222,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='DIVIDEND_AND_YIELD-value']/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.DecimalRangeRight,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -233,7 +232,7 @@ namespace MarketScreener.DataHunters.HAP
                     ServiceMode = WebsiteElement.ServiceModes.XPATH,
                     XPATH = "//*[@data-test='EX_DIVIDEND_DATE-value']/span/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDate
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDate
                 },
 
                 new WebsiteElement()
@@ -246,7 +245,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 40,
                     RightSEMaxDistance = 40,
                     SearchElementRight = "\",\"",
-                    ConverterFunction = StringConverters.ConvertingFunctions.GICSSector
+                    ConvertingFunction = StringConverters.ConvertingFunctions.GICSSector
                 },
                 new WebsiteElement()
                 {
@@ -258,7 +257,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 25,
                     RightSEMaxDistance = 25,
                     SearchElementRight = ",\"",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.99"
                 },
                 new WebsiteElement()
@@ -271,7 +270,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 20,
                     RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalInt,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalInt,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -284,7 +283,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 20,
                     RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal
                 },
                 new WebsiteElement()
                 {
@@ -296,7 +295,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 20,
                     RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -309,7 +308,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 20,
                     RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 },
                 new WebsiteElement()
@@ -322,7 +321,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 40,
                     RightSEMaxDistance = 40,
                     SearchElementRight = "\",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
+                    ConvertingFunction = StringConverters.ConvertingFunctions.Varchar50, //dorobić funkcję a la gics mapującą kraje
                     ExtraParam = @"^.{1,25}"
                 },
                 new WebsiteElement()
@@ -335,7 +334,7 @@ namespace MarketScreener.DataHunters.HAP
                     LeftSEMaxDistance = 20,
                     RightSEMaxDistance = 20,
                     SearchElementRight = ",",
-                    ConverterFunction = StringConverters.ConvertingFunctions.EvalDecimal,
+                    ConvertingFunction = StringConverters.ConvertingFunctions.EvalDecimal,
                     ExtraParam = "0.0"
                 }
             };
@@ -488,5 +487,6 @@ namespace MarketScreener.DataHunters.HAP
 
 
         }
+        */
     }
 }

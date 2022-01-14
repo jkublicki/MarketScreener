@@ -29,14 +29,19 @@ namespace MarketScreener.DataHunters.HAP
             //konstruktor site structure to tempshit / ogólnie przemyśleć czy powinien być i coś sensownego zwracać, od pobrania struktury jest ta klasa
             get
             {
-                if (siteStructure == null)
-                {
-                    siteStructure = new("dupa_123");
+                if (siteStructure != null)
+                {                    
                     return siteStructure;
                 }
                     
                 else
-                    return siteStructure;
+                {
+                    ReadFromDatabase();
+                    if (siteStructure != null)  
+                        return siteStructure;
+                    else
+                        throw new Exception("RunConfiguration: siteStructure is null after ReadFromDatabase().");
+                }
             }
         }
 
@@ -122,7 +127,7 @@ namespace MarketScreener.DataHunters.HAP
             }
             else
             {
-                if (dataTable2.Rows[0] != null && dataTable2.Rows[0].ItemArray.Count() == 3)
+                if (dataTable2.Rows.Count > 0 && dataTable2.Rows[0].ItemArray.Count() == 3)
                 {
                     if (!dataTable2.Rows[0].IsNull(0))
                         planName = dataTable2.Rows[0].ItemArray[0].ToString();
@@ -182,11 +187,128 @@ namespace MarketScreener.DataHunters.HAP
                     else
                         throw new Exception("RunConfiguration: failed to read UrlSetName.");
                 }
+                else
+                    throw new Exception("RunConfiguration: no rows or wrong number of columns retrieved from MS_CFG_PLAN.");
+
+
+
+
+
             }
 
             //docelowo analogicznie jw. dla website structure i website elements
             //dodatkowo min i max time dla randomowego czekania
+            string query6 = "SELECT Name, ServiceMode, XPATH, DataLocation, SearchElementBeforeLeft, SearchElementLeft, LeftSEMaxDistance, RightSEMaxDistance, SearchElementRight, ConvertingFunction, ExtraParam FROM MS_CFG_WEBSITE_ELEMENT WHERE PlanName = (SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1)";
+            int rows6 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query6, false, out DataTable? dataTable6);
+            if (rows6 == -1 || dataTable6 == null)
+            {
+                Log.Entry("Failed to read from MS_CFG_WEBSITE_ELEMENT. Run aborted.");
+                Environment.Exit(1);
+                return;
+            }
+            else
+            {
+                if (dataTable6.Rows.Count > 0 && dataTable6.Rows[0].ItemArray.Count() == 11)
+                {
+                    WebsiteStructure structure = new();
 
+                    foreach(DataRow row in dataTable6.Rows)
+                    {
+                        WebsiteElement element = new WebsiteElement();
+
+                        if (row["Name"] != null && !row.IsNull("Name"))
+                            element.Name = row["Name"].ToString();
+                        if (row["ServiceMode"] != null && !row.IsNull("ServiceMode"))
+                        {
+                            if (WebsiteElement.StringServiceModes.ContainsKey(row["ServiceMode"].ToString()))
+                                element.ServiceMode = WebsiteElement.StringServiceModes[row["ServiceMode"].ToString()];
+                            else
+                            {
+                                Log.Entry("Plan configuration error: unsupported service mode. Run aborted.");
+                                Environment.Exit(1);
+                                return;
+                            }
+                        }
+                        if (row["XPATH"] != null && !row.IsNull("XPATH"))
+                            element.XPATH = row["XPATH"].ToString();
+                        if (row["DataLocation"] != null && !row.IsNull("DataLocation"))
+                        {
+                            if (WebsiteElement.StringDataLocations.ContainsKey(row["DataLocation"].ToString()))
+                                element.DataLocation = WebsiteElement.StringDataLocations[row["DataLocation"].ToString()];
+                            else
+                            {
+                                Log.Entry("Plan configuration error: unsupported data location. Run aborted.");
+                                Environment.Exit(1);
+                                return;
+                            }
+                        }                            
+                        if (row["SearchElementBeforeLeft"] != null && !row.IsNull("SearchElementBeforeLeft"))
+                            element.SearchElementBeforeLeft = row["SearchElementBeforeLeft"].ToString();
+                        if (row["SearchElementLeft"] != null && !row.IsNull("SearchElementLeft"))
+                            element.SearchElementLeft = row["SearchElementLeft"].ToString();
+                        if (row["LeftSEMaxDistance"] != null && !row.IsNull("LeftSEMaxDistance"))
+                        {
+                            bool s = Int32.TryParse(row["LeftSEMaxDistance"].ToString(), out int m);
+                            if (!s)
+                            {
+                                Log.Entry("Plan configuration error: can't convert LeftSEMaxDistance to int. Run aborted.");
+                                Environment.Exit(1);
+                                return;
+                            }
+                            else
+                                element.LeftSEMaxDistance = m;
+                        }                            
+                        if (row["RightSEMaxDistance"] != null && !row.IsNull("RightSEMaxDistance"))
+                        {
+                            bool s = Int32.TryParse(row["RightSEMaxDistance"].ToString(), out int m);
+                            if (!s)
+                            {
+                                Log.Entry("Plan configuration error: can't convert RightSEMaxDistance to int. Run aborted.");
+                                Environment.Exit(1);
+                                return;
+                            }
+                            else
+                                element.RightSEMaxDistance = m;
+                        }                            
+                        if (row["SearchElementRight"] != null && !row.IsNull("SearchElementRight"))
+                            element.SearchElementRight = row["SearchElementRight"].ToString();
+                        if (row["ConvertingFunction"] != null && !row.IsNull("ConvertingFunction"))
+                        {
+                            if (StringConverters.StringConvertingFunctions.ContainsKey(row["ConvertingFunction"].ToString()))
+                                element.ConvertingFunction = StringConverters.StringConvertingFunctions[row["ConvertingFunction"].ToString()];
+                            else
+                            {
+                                Log.Entry("Plan configuration error: unsupported converting function. Run aborted.");
+                                Environment.Exit(1);
+                                return;
+                            }
+                        }                            
+                        if (row["ExtraParam"] != null && !row.IsNull("ExtraParam"))
+                            element.ExtraParam = row["ExtraParam"].ToString();
+
+                        if (element.ServiceMode == WebsiteElement.ServiceModes.XPATH && (element.XPATH is null || element.XPATH == "")
+                            || (element.ServiceMode == WebsiteElement.ServiceModes.DOCTEXT && (element.SearchElementBeforeLeft is null 
+                                || element.SearchElementBeforeLeft == "" || element.SearchElementLeft is null || element.SearchElementLeft == "" 
+                                || element.SearchElementRight is null || element.SearchElementRight == "" )))
+                        {
+                            Log.Entry("Plan configuration error: parameters required by service mode are missing (XPATH and data location or search elements and SE distances). Run aborted.");
+                            Environment.Exit(1);
+                            return;
+                        }
+
+                        //....pozostałe 9, testy konwersji i konwersje dla liczb
+                        //...dorobić 2 słowniki dla enumów
+
+                            //poniżej - walidacja czy ma nie nullowe pola oraz zestaw nullowych (xpath + data location || search elem x3 + dystanse x2...)
+
+
+                        structure.WebsiteElements.Add(element);
+                    }
+                    siteStructure = structure;
+                }
+                else
+                    throw new Exception("RunConfiguration: no rows or wrong number of columns retrieved from MS_CFG_WEBSITE_ELEMENT.");
+            }
 
         }
 

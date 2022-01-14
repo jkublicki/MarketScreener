@@ -18,15 +18,21 @@ namespace MarketScreener.DataHunters.HAP
         public int? LeftSEMaxDistance;
         public int? RightSEMaxDistance;
         public string? SearchElementRight; //jw. występujący po danych
-        public StringConverters.ConvertingFunctions ConverterFunction;
+        public StringConverters.ConvertingFunctions ConvertingFunction;
         public string? ExtraParam; //parametr, zastosowanie specyficzne dla konwertera: varchar - regex, liczbowe - dolny limit (nieakceptowana wartość)
 
 
-        public enum ServiceModes
+        public enum ServiceModes //enum is static per definition https://stackoverflow.com/questions/4567868/troubles-declaring-static-enum-c-sharp
         {
             XPATH,
             DOCTEXT
         }
+
+        public static Dictionary<string, ServiceModes> StringServiceModes = new()
+        {
+            { "XPATH", ServiceModes.XPATH },
+            { "DOCTEXT", ServiceModes.DOCTEXT }
+        };
 
         public enum DataLocations
         {
@@ -34,5 +40,12 @@ namespace MarketScreener.DataHunters.HAP
             InnerText,
             InnerHtml
         }
+
+        public static Dictionary<string, DataLocations> StringDataLocations = new()
+        {
+            { "AttributeValue", DataLocations.AttributeValue },
+            { "InnerText", DataLocations.InnerText },
+            { "InnerHtml", DataLocations.InnerHtml }
+        };
     }
 }
