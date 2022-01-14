@@ -237,7 +237,7 @@ namespace MarketScreener.DataHunters.HAP
                 if (dataField.WebsiteElementFound)
                 {
                     
-                    string s = StringConverters.ConvertValue(dataField.Value, n.ConverterFunction, n.ExtraParam, out bool su);
+                    string s = StringConverters.ConvertValue(dataField.Value, n.ConvertingFunction, n.ExtraParam, out bool su);
                     if (su)
                     {
                         dataField.Value = s;
@@ -247,9 +247,9 @@ namespace MarketScreener.DataHunters.HAP
                     }
                     else
                     {
-                        if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", dataField.Value, ", converter ", n.ConverterFunction, ", node ", n.Name, ", ticker ", urlKey, ""));
+                        if (Log.Enabled) Log.Entry(String.Concat("  Conversion failure for value ", dataField.Value, ", converter ", n.ConvertingFunction, ", node ", n.Name, ", ticker ", urlKey, ""));
                         diagnostics.FailedConversionsCount++;
-                        diagnostics.FailedConversions.Add((dataField.Value, n.ConverterFunction));
+                        diagnostics.FailedConversions.Add((dataField.Value, n.ConvertingFunction));
 
                         dataField.Value = "NULL";
                     }

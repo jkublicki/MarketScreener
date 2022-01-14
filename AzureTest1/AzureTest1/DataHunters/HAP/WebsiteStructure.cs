@@ -76,7 +76,9 @@ namespace MarketScreener.DataHunters.HAP
                     XPATH = "//*[@id='quote-header-info']/div[2]/div[1]/div[1]/h1/text()",
                     DataLocation = WebsiteElement.DataLocations.InnerText,
                     ConvertingFunction = StringConverters.ConvertingFunctions.Varchar50,
-                    ExtraParam = @".+?(?= \()"
+                    ExtraParam = @".+?(?= \()"     
+
+
                 },
                 new WebsiteElement()
                 {
