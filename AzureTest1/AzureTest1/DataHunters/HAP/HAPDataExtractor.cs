@@ -78,7 +78,7 @@ namespace MarketScreener.DataHunters.HAP
 
             //debug
             //tymczasowo włączone zapisywanie do czasu wyjaśnienia problemów z błędnymi danymi
-            //if (Log.DebugEnabled)
+            if (Log.DebugEnabled)
                 doc.Save("doc_" + urlKey + ".txt");
 
 
