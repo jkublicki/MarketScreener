@@ -18,6 +18,9 @@ namespace MarketScreener.DataHunters.HAP
     //pobiera z bazy konfigurację, waliduje i tworzy instancję website structure do użycia, przygotowuje SQL-a do url set-a
     internal class PlanConfiguration
     {
+        //public static string? PlanName1 { get; set; }
+
+
         private string? planName = null;
         private int? runDurationH = null;
         private string? urlSetName = null;
@@ -60,6 +63,10 @@ namespace MarketScreener.DataHunters.HAP
                         throw new Exception("RunConfiguration: planName is null after ReadFromDatabase().");
                 }
             }
+            set
+            {
+                planName = value;
+            }
         }
         public int RunDurationH 
         {
@@ -95,29 +102,25 @@ namespace MarketScreener.DataHunters.HAP
         }
 
         private void ReadFromDatabase()
-        {
-            string query1 = "SELECT Count(1) FROM MS_CFG_PLAN WHERE IsActivePlan = 1";
-            int rows1 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query1, false, out DataTable? dataTable1);
-            if (rows1 == -1 || dataTable1 == null)
+        {            
+            if (planName != null)
             {
-                Log.Entry("Failed to count records in MS_CFG_PLAN. Run aborted.");
-                Environment.Exit(1);
-                return;
-            }
-            if (dataTable1 != null && dataTable1.Rows.Count > 1)
-            {
-                Log.Entry("Plan configuration error: more than one row in MS_CFG_PLAN has IsActivePlan = 1. Only one active plan is allowed. Run aborted.");
-                Environment.Exit(1); //powinien być enum z exit codami
-                return;
-            }
-            if (dataTable1 != null && dataTable1.Rows.Count == 0)
-            {
-                Log.Entry("Plan configuration error: there is no row in MS_CFG_PLAN that has IsActivePlan = 1. One active plan is required. Run aborted.");
-                Environment.Exit(1);
-                return;
+                string query1 = "SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1";
+                int rows1 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query1, false, out DataTable? dataTable1);
+                if (rows1 == -1 || dataTable1 == null || dataTable1.Rows.Count == 0 || dataTable1.Rows[0].ItemArray.Length == 0 || dataTable1.Rows[0].IsNull(0))
+                {
+                    Log.Entry("Failed to find active plans in MS_CFG_PLAN. Run aborted.");
+                    Environment.Exit(1);
+                    return;
+                }
+                else
+                    planName = dataTable1.Rows[0].ItemArray[0].ToString();
             }
 
-            string query2 = "SELECT TOP 1 PlanName, RunDurationH, UrlSetName FROM MS_CFG_PLAN WHERE IsActivePlan = 1";
+            //poniżej wywalić wszystkie WHERE IsActivePlan, zastąpić nazwą planu
+
+
+            string query2 = "SELECT TOP 1 PlanName, RunDurationH, UrlSetName FROM MS_CFG_PLAN WHERE PlanName = '" + planName + "'";
             int rows2 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query2, false, out DataTable? dataTable2);
             if (rows2 == -1 || dataTable2 == null)
             {
@@ -198,7 +201,7 @@ namespace MarketScreener.DataHunters.HAP
 
             //docelowo analogicznie jw. dla website structure i website elements
             //dodatkowo min i max time dla randomowego czekania
-            string query6 = "SELECT Name, ServiceMode, XPATH, DataLocation, SearchElementBeforeLeft, SearchElementLeft, LeftSEMaxDistance, RightSEMaxDistance, SearchElementRight, ConvertingFunction, ExtraParam FROM MS_CFG_WEBSITE_ELEMENT WHERE PlanName = (SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1)";
+            string query6 = "SELECT Name, ServiceMode, XPATH, DataLocation, SearchElementBeforeLeft, SearchElementLeft, LeftSEMaxDistance, RightSEMaxDistance, SearchElementRight, ConvertingFunction, ExtraParam FROM MS_CFG_WEBSITE_ELEMENT WHERE PlanName = '" + planName + "'";
             int rows6 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query6, false, out DataTable? dataTable6);
             if (rows6 == -1 || dataTable6 == null)
             {
@@ -311,7 +314,7 @@ namespace MarketScreener.DataHunters.HAP
             }
 
 
-            string query7 = "SELECT Query FROM MS_CFG_WEBSITE_QUERY WHERE PlanName = (SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1) ORDER BY OrderIndex";
+            string query7 = "SELECT Query FROM MS_CFG_WEBSITE_QUERY WHERE PlanName = '" + planName + "' ORDER BY OrderIndex";
             int rows7 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query7, false, out DataTable? dataTable7);
             if (rows7 == -1 || dataTable7 == null)
             {

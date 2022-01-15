@@ -70,8 +70,11 @@ namespace MarketScreener.DataHunters.HAP
             }
         }
 
-        public void Run()
+        public void Run(string? planName)
         {
+            if (planName != null)
+                planConfiguration.PlanName = planName;  
+
             DateTime runStartTime = DateTime.UtcNow;
             DateTime lastServiceEndTime = DateTime.UtcNow.AddHours(-1);
             int waitTimeMs = 5000;
