@@ -16,13 +16,13 @@ namespace MarketScreener
         {    
             SetTimer();
 
-            if (Log.Enabled)
+            if (DataHunters.HAP.HAPSettings.LogEnabled)
                 Log.Entry("Application start");
 
             manager = new DataHunters.HAP.HAPManager();
             manager.Run();
 
-            if (Log.Enabled)
+            if (DataHunters.HAP.HAPSettings.LogEnabled)
                 Log.Entry("Application stop");
         }
 

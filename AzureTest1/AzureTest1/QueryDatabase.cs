@@ -52,11 +52,11 @@ namespace MarketScreener
                 {
                     Debug.WriteLine(e.ToString());
 
-                    if (Log.Enabled)
-                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed:\n  Query: ", query, "\n  Message:", e.Message));
+                    if (DataHunters.HAP.HAPSettings.LogEnabled)
+                        Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement() failed:\n  Query: ", query, "\n  Message:", e.Message)); //wynocha z tym, niech metoda zwraca message
 
-                    if (Log.DebugEnabled)
-                        Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatement():\n", e.ToString()));
+                    if (DataHunters.HAP.HAPSettings.DebugEnabled)
+                        Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatement():\n", e.ToString())); //jw
 
                     if (throwError)
                     {
@@ -77,17 +77,16 @@ namespace MarketScreener
             return rows;
         }
 
-        public static List<int> ExecuteSQLStatementNQ(string connectionString, List<string> queries, bool throwError, out bool success)
+        public static List<int> ExecuteSQLStatementNQ(string connectionString, List<string> queries, bool throwError)
         {
             if (!queries.Any())
             {
                 string msg = "ExecuteSQLStatement(), NonQuery variant, called with empty list of queries. Run stopped.";
-                success = false;
                 Log.Entry(msg);
                 throw new Exception(msg);
             }
 
-            if (Log.DebugEnabled)
+            if (DataHunters.HAP.HAPSettings.DebugEnabled)
                 Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatement(), NonQuery variant, about to execute queries:\n",
                     String.Join("\n", queries.Select(q => q[..Math.Min(200, q.Length)]))));                    
 
@@ -110,13 +109,9 @@ namespace MarketScreener
                         
                         int r = command.ExecuteNonQuery();
                         rows.Add(r);                     
-                        if (Log.DebugEnabled)
+                        if (DataHunters.HAP.HAPSettings.DebugEnabled)
                             Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatementNQ() execution successful, ", r.ToString(), " row affected."));                        
                     }
-                    if (rows.Any(r => r == -1))
-                        success = false;
-                    else
-                        success = true;
                     return rows;
                 }
             }
@@ -124,12 +119,10 @@ namespace MarketScreener
             {
                 Debug.WriteLine(e.ToString());
 
-                success = false;
-
-                if (Log.Enabled)
+                if (DataHunters.HAP.HAPSettings.LogEnabled)
                     Log.Entry(String.Concat("QueryDatabase.ExecuteSQLStatementNQ() failed:\n  Query: ", lastQuery, "\n  Message:", e.Message));
 
-                if (Log.DebugEnabled)
+                if (DataHunters.HAP.HAPSettings.DebugEnabled)
                     Log.Entry(String.Concat("Full exception in QueryDatabase.ExecuteSQLStatementNQ():\n", e.ToString()));
 
                 if (throwError)
@@ -144,8 +137,12 @@ namespace MarketScreener
                 return rows;
             }
 
-            
-
+            //aby stworzyć uniwersalną klasę do komunikacji z bazą:
+            //dodać metody: CellToInt32(DataTable d, int rowNo, string colName.... i czy blad, komunikat bledu), CellToString, CellToDecimal...
+            //wypierdolić zależności od innych klas
+            //a na uniwersalnej można zrobić wrapper(?) który będzie logować używając Log pod warunkami określonymi w DataHunters.HAP.HAPSettings i będzie ukrywać metod uniwersalnej
+            //to jest ok, a dodawanie do metod zwrotnego stringa nie jest ok, bo będzie go trzeba obsłużyć tyle razy, ile jest wywołań
+            //w uniwersalnej klasie muszą być w metodach informacje zwrotne: message i dopilnować, żeby zwracało po każdym failu -1
         }
 
     }

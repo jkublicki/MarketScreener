@@ -15,10 +15,19 @@ namespace MarketScreener.DataHunters.HAP
         private List<(string, string)> urls
         {
             get
-            {
+            {                
                 if (_urls == null)
                 {
                     _urls = new();
+
+                    if (HAPSettings.DebugEnabled && HAPSettings.TestUrl != null) //tryb testowy
+                    {
+                        _urls.Add(((string, string))HAPSettings.TestUrl);
+                        if (HAPSettings.LogEnabled)
+                            Log.Entry(String.Concat("Running test url"));
+                        return _urls;
+                    }
+
                     string query = String.Concat("SELECT UrlKey, Url FROM ", planConfiguration.UrlSetName);
                     int rows = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query, false, out DataTable? dataTable);
                     if (rows == -1 || dataTable == null)
@@ -27,7 +36,7 @@ namespace MarketScreener.DataHunters.HAP
                     }
                     else
                     {
-                        if (Log.Enabled) 
+                        if (HAPSettings.LogEnabled) 
                             Log.Entry(String.Concat(dataTable.Rows.Count.ToString(), " rows retrieved from url set ", planConfiguration.UrlSetName, "."));
 
                         foreach (DataRow row in dataTable.Rows)
@@ -50,11 +59,13 @@ namespace MarketScreener.DataHunters.HAP
 
         private void Service()
         {
+
+
             if (urls.Any())
             {
                 (string, string) url = urls.First();
                 urls.Remove(url);
-
+                
                 new HAP.HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure, ref diag);
             }
         }
@@ -66,8 +77,8 @@ namespace MarketScreener.DataHunters.HAP
             int waitTimeMs = 5000;
 
             string consoleMessage = "MarketScreener will be running for " + planConfiguration.RunDurationH.ToString() + " hours from " + runStartTime.ToString("yyyy-MM-dd HH:mm") + " UTC, type STOP to break.";
-            if (Log.DebugEnabled) 
-                consoleMessage += "\nDebug enabled";
+            if (HAPSettings.DebugEnabled)
+                consoleMessage += "\nDebug enabled\n" + HAPSettings.Print();
             
             //debug do usunięcia, specyficzny dla planu i ogólnie brzydki - rynki w tym run
             consoleMessage += "\n--HAPxYF debug, markets: " 
@@ -93,9 +104,14 @@ namespace MarketScreener.DataHunters.HAP
                     //dla 2500 * { 10%: R * 2 + 20, 90%: R * 2 + 1 YF się bronił, próbka 77
                     //dla 3000 * { 15%: R * 2 + 20, 85%: R * 2 + 1 YF się nie bronił dla próbki 201; <= TO JEST OK DLA YF, NIE RUSZAĆ!
 
-                    Random r = new Random();
+                    double b = HAPSettings.DelayBase;
+                    double c = HAPSettings.LongDelayChance;
+                    double mu = HAPSettings.DelayRandomMul;
+                    double mo = HAPSettings.LongDelayRandomMod;
 
-                    waitTimeMs = (int)Math.Floor(3000 * ((decimal)(r.NextDouble() > 0.15 ? (r.NextDouble() * 2.0 + 1) : (r.NextDouble() * 2.0 + 20))));
+                    Random r = new();
+
+                    waitTimeMs = (int)Math.Floor(b * (r.NextDouble() > c ? (r.NextDouble() * mu + 1) : (r.NextDouble() * mu + mo)));
 
                     lastServiceEndTime = DateTime.UtcNow;
 
@@ -103,7 +119,7 @@ namespace MarketScreener.DataHunters.HAP
                     if (count % 5 == 0) //właściwe jest 8? im dłużej, tym gorzej przy sql fail, ale nie przerwie wpisywania STOP
                     {
                         Console.Clear();
-                        Console.WriteLine(consoleMessage + "\nDiagnostics:\n" + diag.Print());
+                        Console.WriteLine(consoleMessage + "\nDiagnostics (" + DateTime.UtcNow.ToString("HH:mm:ss") + "):\n" + diag.Print());
                     }
                         
                 }
@@ -111,7 +127,7 @@ namespace MarketScreener.DataHunters.HAP
                 
             }
 
-            if (Log.Enabled)
+            if (HAPSettings.LogEnabled)
                 Log.Entry(String.Concat("End of run. Url list count: ", urls.Count().ToString(), ", break signal: ",
                     breakSingal.ToString(), ", run hours elapsed: ", (DateTime.UtcNow - runStartTime).TotalHours.ToString("0.000000"), 
                     ".\nDiagnostics:\n" + diag.Print()));
