@@ -103,7 +103,7 @@ namespace MarketScreener.DataHunters.HAP
 
         private void ReadFromDatabase()
         {            
-            if (planName != null)
+            if (planName == null)
             {
                 string query1 = "SELECT TOP 1 PlanName FROM MS_CFG_PLAN WHERE IsActivePlan = 1";
                 int rows1 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query1, false, out DataTable? dataTable1);
@@ -117,6 +117,8 @@ namespace MarketScreener.DataHunters.HAP
                     planName = dataTable1.Rows[0].ItemArray[0].ToString();
             }
 
+
+////dodac moze weryfikacje przez sprawdzenie, ze taki plan faktycznie jest w bazie?? zeby ladnie poinformowac
             //poniżej wywalić wszystkie WHERE IsActivePlan, zastąpić nazwą planu
 
 
@@ -124,7 +126,13 @@ namespace MarketScreener.DataHunters.HAP
             int rows2 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query2, false, out DataTable? dataTable2);
             if (rows2 == -1 || dataTable2 == null)
             {
-                Log.Entry("Failed to read plan from MS_CFG_PLAN. Run aborted.");
+                Log.Entry("Failed to read plan from MS_CFG_PLAN (SQL exception). Run aborted.");
+                Environment.Exit(1);
+                return;
+            }
+            if (rows2 == 0)
+            {
+                Log.Entry("Failed to find plan named " + planName + " in MS_CFG_PLAN. Run aborted.");
                 Environment.Exit(1);
                 return;
             }

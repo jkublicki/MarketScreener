@@ -24,6 +24,9 @@ namespace MarketScreener
                     shortArgs.Add(a[1]);
             }
 
+                    //chamski debug
+                    //longArgs.Add("aaa_fake_plan");
+
             SetTimer();
 
             if (DataHunters.HAP.HAPSettings.LogEnabled)
