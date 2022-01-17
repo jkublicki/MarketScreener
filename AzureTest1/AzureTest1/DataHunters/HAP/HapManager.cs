@@ -66,7 +66,7 @@ namespace MarketScreener.DataHunters.HAP
                 (string, string) url = urls.First();
                 urls.Remove(url);
                 
-                new HAP.HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure, ref diag);
+                new HAPDataExtractor().Extract(url.Item1, url.Item2, planConfiguration.SiteStructure, ref diag);
             }
         }
 
@@ -98,7 +98,7 @@ namespace MarketScreener.DataHunters.HAP
             {
                 if ((DateTime.UtcNow - lastServiceEndTime).TotalMilliseconds > waitTimeMs)
                 {
-                    Service();
+                    //Service(); - tak było oryginalnie, początek snu na koniec service - zmieniam 2022.01.16 21:55 utc, będzie początek snu równocześnie z service - chcę większej prędkości i większej kontroli nad prędkością
 
                     //dla 1667 odpala się mechanizm obronny YF
                     //dla 3334 * (R * 2.0 + 1) YF się nie bronił, próbka 88 stron; bronił po próbce 157 stron
@@ -117,6 +117,10 @@ namespace MarketScreener.DataHunters.HAP
                     waitTimeMs = (int)Math.Floor(b * (r.NextDouble() > c ? (r.NextDouble() * mu + 1) : (r.NextDouble() * mu + mo)));
 
                     lastServiceEndTime = DateTime.UtcNow;
+
+
+                    Service(); //po zmianie 2022.01.16 21:55 utc, pilnować nienaturalnie nieświeżych stron / obrony YF
+
 
                     count++;
                     if (count % 5 == 0) //właściwe jest 8? im dłużej, tym gorzej przy sql fail, ale nie przerwie wpisywania STOP
@@ -142,17 +146,6 @@ namespace MarketScreener.DataHunters.HAP
         {
             breakSingal = true;
         }
-
-        //TODO po 2022-01-09
-        ////publiczna funkcja Run()
-        ////w niej dla jednego z urls new HAP.HAPDataExtractor().Extract(..., ..., planConfigurtion.SiteStructure); 
-        ////używa pierwszego url do góry i usuwa go z listy
-        ////potem czeka losowy czas, ok 1-4 s
-        ////loguje początek i koniec run
-        ////wymyślić jak zrobić manualne przerwanie, aby było pomiędzy extractami - nasłuch na event w Main()?
-        //docelowo pobierać website structure z bazy - rozbudować PlanConfiguration.cs
-        //czy ok że ten manager nie ma konstruktora??
-        //z innej beczki - niech wywołanie tej aplikacji będzie co godzine na niecala godzine - na wypadek problemu z polaczeniem na etapie pobierania configa, bo to moze udupic całe działanie
 
     }
 }

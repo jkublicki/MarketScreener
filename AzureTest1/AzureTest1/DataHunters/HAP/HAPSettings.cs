@@ -9,7 +9,7 @@ namespace MarketScreener.DataHunters.HAP
     internal static class HAPSettings
     {        
         public const bool LogEnabled = true; //default: true
-        public const double DelayBase = 3000; //default: 3000, it's important; wait time ms = R > LongDelayChance ? DelayBase * (R1 * DelayRandomMul  + 1) : DelayBase * (R1 * DelayRandomMul  + LongDelayRandomMod)
+        public const double DelayBase = 3093; //default: 3000, it's important; wait time ms = R > LongDelayChance ? DelayBase * (R1 * DelayRandomMul  + 1) : DelayBase * (R1 * DelayRandomMul  + LongDelayRandomMod)
         public const double DelayRandomMul = 2; //default: 2
         public const double LongDelayChance = 0.15; //default: 0.15
         public const int LongDelayRandomMod = 20; //default 20; 1 will be used in case short delay
