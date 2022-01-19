@@ -83,13 +83,10 @@ namespace MarketScreener.DataHunters.HAP
             if (HAPSettings.DebugEnabled)
                 consoleMessage += "\nDebug enabled\n" + HAPSettings.Print();
             
-            //debug do usunięcia, specyficzny dla planu i ogólnie brzydki - rynki w tym run
-            consoleMessage += "\n--HAPxYF debug, markets: " 
-                + String.Join(", ", urls.Select(t => 
-                t.Item1.IndexOf('.') > 0 ? 
-                t.Item1.Split('.', StringSplitOptions.RemoveEmptyEntries).Last() : "nyse_nasdaq").Distinct().Except(new List<string>() { "A", "B"}).ToList());
+            if (urls.Count > 0)
+                consoleMessage += String.Concat("\nKeys in url set (", urls.Count.ToString(), "): ", 
+                    urls.Count > 5 ? String.Join(", ", urls.Take(3).Select(e => e.Item1)) + ", ..., " + urls.Last().Item1 : String.Join(", ", urls.Select(e => e.Item1)));
             
-
             Console.WriteLine(consoleMessage);
 
             int count = 0;
