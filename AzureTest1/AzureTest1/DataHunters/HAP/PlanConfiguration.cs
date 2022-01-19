@@ -322,7 +322,7 @@ namespace MarketScreener.DataHunters.HAP
             }
 
 
-            string query7 = "SELECT Query FROM MS_CFG_WEBSITE_QUERY WHERE PlanName = '" + planName + "' ORDER BY OrderIndex";
+            string query7 = "SELECT Query FROM MS_CFG_WEBSITE_QUERY WHERE PlanName = '" + planName + "' AND IsEnabled = 1 ORDER BY OrderIndex";
             int rows7 = QueryDatabase.ExecuteSQLStatement(Secrets.ConnectionString, query7, false, out DataTable? dataTable7);
             if (rows7 == -1 || dataTable7 == null)
             {

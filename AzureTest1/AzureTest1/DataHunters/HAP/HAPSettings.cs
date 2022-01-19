@@ -17,7 +17,7 @@ namespace MarketScreener.DataHunters.HAP
         public const bool DebugEnabled = false; //default: false; Save doc, detailed log, overwrite url (if not null)
         public const bool SaveBrokenWebsites = true; //default: false
         public const bool SkipDataExtraction = false; //default: false
-        public static (string, string)? TestUrl = null; //ie. ("BAC", "https://finance.yahoo.com/quote/bac"); default: null; Overwrite url set (if DebugEnabled)
+        public static (string, string)? TestUrl = null; //("ATC.WA", "https://finance.yahoo.com/quote/ATC.WA") ; //ie. ("BAC", "https://finance.yahoo.com/quote/bac"); default: null; Overwrite url set (if DebugEnabled)
 
         public static string Print()
         {
